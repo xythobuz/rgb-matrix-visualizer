@@ -11,7 +11,7 @@ import time
 import random
 
 class GameOfLife:
-    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0, rc = False):
+    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0, rc = None):
         self.gui = g
         self.interval = 1.0 / f
         self.setColors(c1, c2)
@@ -24,18 +24,19 @@ class GameOfLife:
         self.data = self.init()
         self.start = time.time()
         self.last = time.time()
+        self.lastColor = time.time()
         self.done = False
 
-        if self.randomizeColors:
+        if self.randomizeColors != None:
             self.randomize()
 
-    def setColors(self, c1, c2):
+    def setColors(self, c1 = (255, 255, 255), c2 = (0, 0, 0)):
         self.colorFG = c1
         self.colorBG = c2
 
     def randomize(self):
-        c1 = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
-        c2 = (random.randrange(0, 128), random.randrange(0, 128), random.randrange(0, 128))
+        c1 = (random.randrange(0, 16) << 4, random.randrange(0, 16) << 4, random.randrange(0, 16) << 4)
+        c2 = (random.randrange(0, 16) << 0, random.randrange(0, 16) << 0, random.randrange(0, 16) << 0)
         self.setColors(c1, c2)
 
     def init(self):
@@ -105,6 +106,11 @@ class GameOfLife:
             self.last = time.time()
             self.step()
 
+        if (self.randomizeColors != None) and (self.randomizeColors != True):
+            if (time.time() - self.lastColor) > self.randomizeColors:
+                self.lastColor = time.time()
+                g.randomize()
+
         for x in range(0, self.gui.width):
             for y in range(0, self.gui.height):
                 if self.data[x][y]:
@@ -122,15 +128,11 @@ if __name__ == "__main__":
         from test import TestGUI
         t = TestGUI()
 
-    g = GameOfLife(t)
-
-    # start out with random colors
-    g.randomize()
+    g = GameOfLife(t, 20, (255, 255, 255), (0, 0, 0), 20.0, 2.0)
 
     def helper():
         if g.finished():
             g.restart()
-            g.randomize()
         g.draw()
 
     t.debug_loop(helper)
