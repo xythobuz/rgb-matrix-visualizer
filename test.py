@@ -33,7 +33,7 @@ class TestGUI:
 
     def loop_end(self):
         pygame.display.flip()
-        self.clock.tick(60)
+        self.clock.tick(30)
 
     def debug_loop(self, func = None):
         while True:

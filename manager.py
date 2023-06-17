@@ -13,17 +13,23 @@ class Manager:
     def __init__(self, g):
         self.gui = g
         self.screens = []
-        self.index = 0
         self.restart()
 
     def restart(self):
+        self.index = 0
+        self.done = False
         self.lastTime = time.time()
+        if len(self.screens) > 0:
+            self.screens[0][0].restart()
+
+    def finished(self):
+        return self.done
 
     def add(self, s, d = None):
         v = (s, d)
         self.screens.append(v)
 
-    def loop(self):
+    def draw(self):
         self.screens[self.index][0].draw()
 
         if self.screens[self.index][1] == None:
@@ -31,12 +37,14 @@ class Manager:
             if self.screens[self.index][0].finished():
                 self.lastTime = time.time()
                 self.index = (self.index + 1) % len(self.screens)
+                self.done = (self.index == 0)
                 self.screens[self.index][0].restart()
         else:
             # use given timeout
             if (time.time() - self.lastTime) > self.screens[self.index][1]:
                 self.lastTime = time.time()
                 self.index = (self.index + 1) % len(self.screens)
+                self.done = (self.index == 0)
                 self.screens[self.index][0].restart()
 
 if __name__ == "__main__":
@@ -68,5 +76,13 @@ if __name__ == "__main__":
     m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0, True))
     m.add(Solid(t, 1.0))
 
+    sub = Manager(t)
+    sub.add(ScrollText(t, "Hello"))
+    sub.add(Solid(t, 1.0, (0, 255, 0)))
+    sub.add(ScrollText(t, "World"))
+    sub.add(Solid(t, 1.0, (0, 0, 255)))
+    m.add(sub)
+    m.add(Solid(t, 1.0))
+
     m.restart()
-    t.debug_loop(m.loop)
+    t.debug_loop(m.draw)
