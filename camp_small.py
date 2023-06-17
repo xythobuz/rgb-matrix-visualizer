@@ -25,7 +25,7 @@ if __name__ == "__main__":
     t.loop_end()
 
     success = Manager(t)
-    success.add(ScrollText(t, "TODO"))
+    success.add(ImageScreen(t, "drinka.gif", 0.2, 3, 20.0))
     success.add(Solid(t, 1.0))
 
     fail = Manager(t)

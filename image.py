@@ -24,6 +24,9 @@ class ImageScreen:
         self.image = Image.open(self.path)
         print(p, self.image.width, self.image.height, self.image.is_animated, self.image.n_frames)
 
+        self.xOff = int((self.gui.width - self.image.width) / 2)
+        self.yOff = int((self.gui.height - self.image.height) / 2)
+
         self.restart()
 
     def restart(self):
@@ -63,9 +66,9 @@ class ImageScreen:
                                 c = self.background
                     if c == None:
                         c = (p[v * 3 + 0], p[v * 3 + 1], p[v * 3 + 2])
-                    self.gui.set_pixel(x, y, c)
+                    self.gui.set_pixel(x + self.xOff, y + self.yOff, c)
                 else:
-                    self.gui.set_pixel(x, y, v)
+                    self.gui.set_pixel(x + self.xOff, y + self.yOff, v)
 
 if __name__ == "__main__":
     import util
@@ -78,7 +81,7 @@ if __name__ == "__main__":
     imageDir = os.path.join(scriptDir, "images")
     for f in os.listdir(os.fsencode(imageDir)):
         filename = os.fsdecode(f)
-        m.add(ImageScreen(t, os.path.join(imageDir, filename)))
+        m.add(ImageScreen(t, filename))
 
     m.restart()
     t.debug_loop(m.draw)
