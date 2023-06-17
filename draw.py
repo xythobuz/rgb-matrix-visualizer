@@ -28,21 +28,27 @@ class DrawText:
             if filename == "iv18x16u.bdf":
                 offset = 6
 
-            data = (font, offset)
+            data = (font, offset, {})
             self.fonts.append(data)
 
     def getGlyph(self, c):
-        f, o = self.fonts[0] # TODO selection of fonts
-        g = f.glyph(c).draw()
+        f, o, cache = self.fonts[0] # TODO selection of fonts
 
-        # invert color
-        g = g.replace(1, 2).replace(0, 1).replace(2, 0)
+        # only render glyphs once, cache resulting image data
+        if not c in cache:
+            g = f.glyph(c).draw()
 
-        # render to pixel data
-        img = Image.frombytes('RGBA',
-                              (g.width(), g.height()),
-                              g.tobytes('RGBA'))
-        return (img, o)
+            # invert color
+            g = g.replace(1, 2).replace(0, 1).replace(2, 0)
+
+            # render to pixel data
+            img = Image.frombytes('RGBA',
+                                (g.width(), g.height()),
+                                g.tobytes('RGBA'))
+
+            cache[c] = img
+
+        return (cache[c], o)
 
     def drawGlyph(self, g, xOff, yOff):
         for x in range(0, g.width):
@@ -97,5 +103,6 @@ if __name__ == "__main__":
     else:
         from test import TestGUI
         t = TestGUI()
+
     d = ScrollText(t, "Hello, World!")
     t.debug_loop(d.draw)

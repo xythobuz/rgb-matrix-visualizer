@@ -99,9 +99,12 @@ if __name__ == "__main__":
     else:
         from test import TestGUI
         t = TestGUI()
+
     g = GameOfLife(t)
+
     def helper():
         if g.finished():
             g.restart()
         g.draw()
+
     t.debug_loop(helper)

@@ -29,5 +29,6 @@ if __name__ == "__main__":
     else:
         from test import TestGUI
         t = TestGUI()
-    d = ScrollText(t, "Hello, World!")
+
+    d = Solid(t, 1.0, (0, 255, 0))
     t.debug_loop(d.draw)

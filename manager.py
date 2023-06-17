@@ -7,6 +7,9 @@ class Manager:
         self.gui = g
         self.screens = []
         self.index = 0
+        self.restart()
+
+    def restart(self):
         self.lastTime = time.time()
 
     def add(self, s, d = None):
@@ -17,6 +20,7 @@ class Manager:
         self.screens[self.index][0].draw()
 
         if self.screens[self.index][1] == None:
+            # let screen decide when it is done
             if self.screens[self.index][0].finished():
                 self.index = (self.index + 1) % len(self.screens)
                 self.lastTime = time.time()
@@ -61,4 +65,5 @@ if __name__ == "__main__":
     m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0))
     m.add(Solid(t, 1.0))
 
+    m.restart()
     t.debug_loop(m.loop)

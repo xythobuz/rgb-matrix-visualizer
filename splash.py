@@ -33,6 +33,7 @@ if __name__ == "__main__":
     else:
         from test import TestGUI
         t = TestGUI()
+
     s = SplashScreen(t)
     s.draw()
     t.debug_loop(s.draw)
