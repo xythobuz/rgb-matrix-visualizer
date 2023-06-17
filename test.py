@@ -1,0 +1,45 @@
+#!/usr/bin/env python
+
+import pygame
+
+class TestGUI:
+    def __init__(self, width = 32, height = 32, multiplier = 16):
+        self.width = width
+        self.height = height
+        self.multiplier = multiplier
+
+        pygame.display.init()
+        self.screen = pygame.display.set_mode((self.width * self.multiplier, self.height * self.multiplier))
+        self.clock = pygame.time.Clock()
+        self.running = True
+
+    def exit(self):
+        pygame.quit()
+
+    def loop_start(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return True
+
+        self.screen.fill("black")
+        return False
+
+    def loop_end(self):
+        pygame.display.flip()
+        self.clock.tick(60)
+
+    def debug_loop(self, func = None):
+        while True:
+            if self.loop_start():
+                break
+            if func != None:
+                func()
+            self.loop_end()
+        self.exit()
+
+    def set_pixel(self, x, y, color):
+        pygame.draw.rect(self.screen, color, pygame.Rect(x * self.multiplier, y * self.multiplier, self.multiplier, self.multiplier))
+
+if __name__ == "__main__":
+    t = TestGUI(32, 32)
+    t.debug_loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
