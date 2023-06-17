@@ -53,19 +53,15 @@ if __name__ == "__main__":
     from solid import Solid
     from life import GameOfLife
 
-    import platform
-    t = None
-    if platform.machine() == "armv7l":
-        from pi import PiMatrix
-        t = PiMatrix()
-    else:
-        from test import TestGUI
-        t = TestGUI()
+    import util
+    t = util.getTarget()
+
+    splash = SplashScreen(t)
+    t.loop_start()
+    splash.draw()
+    t.loop_end()
 
     m = Manager(t)
-
-    m.add(SplashScreen(t), 2)
-    m.add(Solid(t, 1.0))
 
     m.add(ScrollText(t, "This appears once"))
     m.add(Solid(t, 1.0))

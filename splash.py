@@ -32,15 +32,7 @@ class SplashScreen:
         pass
 
 if __name__ == "__main__":
-    import platform
-    t = None
-    if platform.machine() == "armv7l":
-        from pi import PiMatrix
-        t = PiMatrix()
-    else:
-        from test import TestGUI
-        t = TestGUI()
-
+    import util
+    t = util.getTarget()
     s = SplashScreen(t)
-    s.draw()
     t.debug_loop(s.draw)

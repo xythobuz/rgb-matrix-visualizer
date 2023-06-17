@@ -11,14 +11,17 @@ import time
 import random
 
 class GameOfLife:
-    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0, rc = None):
+    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0, rc = None, bt = 45.0):
         self.gui = g
         self.interval = 1.0 / f
         self.setColors(c1, c2)
         self.timeout = t
         self.randomizeColors = rc
+        self.backupTimeout = bt
         random.seed()
         self.restart()
+
+        self.editDistFinish = 20
 
     def restart(self):
         self.data = self.init()
@@ -26,6 +29,7 @@ class GameOfLife:
         self.last = time.time()
         self.lastColor = time.time()
         self.done = False
+        self.lastDiff = 100
 
         if self.randomizeColors != None:
             self.randomize()
@@ -53,8 +57,18 @@ class GameOfLife:
         return data
 
     def finished(self):
-        if self.done or ((time.time() - self.start) > self.timeout):
+        if self.done:
             return True
+
+        if self.timeout != None:
+            if (time.time() - self.start) > self.timeout:
+                return True
+        else:
+            if self.lastDiff < self.editDistFinish:
+                return True
+            if (time.time() - self.start) > self.backupTimeout:
+                return True
+
         return False
 
     def alive(self, data, x, y):
@@ -93,13 +107,19 @@ class GameOfLife:
                     self.data[x][y] = False
 
         # compare new and old states
-        same = True
+        diff = 0
         for x in range(0, self.gui.width):
             for y in range(0, self.gui.height):
                 if self.data[x][y] != old[x][y]:
-                    same = False
-                    break
-        self.done = same
+                    diff += 1
+                    if self.timeout == None:
+                        if diff >= self.editDistFinish:
+                            break
+                    else:
+                        if diff >= 1:
+                            break
+        self.done = (diff == 0)
+        self.lastDiff = diff
 
     def draw(self):
         if (time.time() - self.last) > self.interval:
@@ -109,7 +129,7 @@ class GameOfLife:
         if (self.randomizeColors != None) and (self.randomizeColors != True):
             if (time.time() - self.lastColor) > self.randomizeColors:
                 self.lastColor = time.time()
-                g.randomize()
+                self.randomize()
 
         for x in range(0, self.gui.width):
             for y in range(0, self.gui.height):
@@ -119,16 +139,10 @@ class GameOfLife:
                     self.gui.set_pixel(x, y, self.colorBG)
 
 if __name__ == "__main__":
-    import platform
-    t = None
-    if platform.machine() == "armv7l":
-        from pi import PiMatrix
-        t = PiMatrix()
-    else:
-        from test import TestGUI
-        t = TestGUI()
+    import util
+    t = util.getTarget()
 
-    g = GameOfLife(t, 20, (255, 255, 255), (0, 0, 0), 20.0, 2.0)
+    g = GameOfLife(t, 20, (255, 255, 255), (0, 0, 0), None, 2.0)
 
     def helper():
         if g.finished():

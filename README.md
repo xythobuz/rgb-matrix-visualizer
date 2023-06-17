@@ -22,3 +22,5 @@ This project is licensed as beer-ware:
     ----------------------------------------------------------------------------
 
 The included font from [farsil/ibmfonts](https://github.com/farsil/ibmfonts) is licensed as `CC-BY-SA-4.0`.
+
+The included GIFs are from [GifCities](https://gifcities.org/?q=32)

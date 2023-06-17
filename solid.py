@@ -28,14 +28,8 @@ class Solid:
                 self.gui.set_pixel(x, y, self.color)
 
 if __name__ == "__main__":
-    import platform
-    t = None
-    if platform.machine() == "armv7l":
-        from pi import PiMatrix
-        t = PiMatrix()
-    else:
-        from test import TestGUI
-        t = TestGUI()
+    import util
+    t = util.getTarget()
 
     d = Solid(t, 1.0, (0, 255, 0))
     t.debug_loop(d.draw)

@@ -84,9 +84,9 @@ class DrawText:
             if xOff >= -10: # some wiggle room so chars dont disappear
                 self.drawGlyph(g, xOff, y)
         return w
-
+import sys
 class ScrollText:
-    def __init__(self, g, t, i = 1, s = 50):
+    def __init__(self, g, t, i = 1, s = 75):
         self.gui = g
         self.drawer = DrawText(self.gui)
         self.text = t
@@ -106,7 +106,8 @@ class ScrollText:
 
     def draw(self):
         if (time.time() - self.last) > self.speed:
-            self.offset += (time.time() - self.last) / self.speed
+            off = (time.time() - self.last) / self.speed
+            self.offset += int(off)
             self.last = time.time()
             if self.offset >= self.width:
                 self.offset = -self.gui.width
@@ -115,14 +116,8 @@ class ScrollText:
         self.drawer.text(self.text, self.offset, True)
 
 if __name__ == "__main__":
-    import platform
-    t = None
-    if platform.machine() == "armv7l":
-        from pi import PiMatrix
-        t = PiMatrix()
-    else:
-        from test import TestGUI
-        t = TestGUI()
+    import util
+    t = util.getTarget()
 
-    d = ScrollText(t, "Hello, World!")
+    d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?")
     t.debug_loop(d.draw)
