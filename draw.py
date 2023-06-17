@@ -51,17 +51,31 @@ class DrawText:
         return (cache[c], o)
 
     def drawGlyph(self, g, xOff, yOff):
+        if xOff >= self.gui.width:
+            return
+
         for x in range(0, g.width):
             for y in range(0, g.height):
-                p = g.getpixel((x, y))
-                self.gui.set_pixel(xOff + x, yOff + y, p)
+                xTarget = xOff + x
+                if (xTarget < 0) or (xTarget >= self.gui.width):
+                    continue
 
-    def text(self, s, offset = 0):
+                p = g.getpixel((x, y))
+                self.gui.set_pixel(xTarget, yOff + y, p)
+
+    def text(self, s, offset = 0, earlyAbort = True):
         w = 0
         for c in s:
+            xOff = -offset + w
+            if earlyAbort:
+                if xOff >= self.gui.width:
+                    break
+
             g, y = self.getGlyph(c)
-            self.drawGlyph(g, -offset + w, y)
             w += g.width
+
+            if xOff >= -10: # some wiggle room so chars dont disappear
+                self.drawGlyph(g, xOff, y)
         return w
 
 class ScrollText:
@@ -72,7 +86,7 @@ class ScrollText:
         self.iterations = i
         self.speed = 1.0 / s
 
-        self.width = self.drawer.text(self.text)
+        self.width = self.drawer.text(self.text, 0, False)
         self.restart()
 
     def restart(self):
@@ -91,7 +105,7 @@ class ScrollText:
                 self.offset = -self.gui.width
                 self.count += 1
 
-        self.drawer.text(self.text, self.offset)
+        self.drawer.text(self.text, self.offset, True)
 
 if __name__ == "__main__":
     import platform
