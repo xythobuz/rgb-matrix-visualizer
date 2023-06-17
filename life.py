@@ -11,11 +11,12 @@ import time
 import random
 
 class GameOfLife:
-    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0):
+    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0, rc = False):
         self.gui = g
         self.interval = 1.0 / f
         self.setColors(c1, c2)
         self.timeout = t
+        self.randomizeColors = rc
         random.seed()
         self.restart()
 
@@ -25,9 +26,17 @@ class GameOfLife:
         self.last = time.time()
         self.done = False
 
+        if self.randomizeColors:
+            self.randomize()
+
     def setColors(self, c1, c2):
         self.colorFG = c1
         self.colorBG = c2
+
+    def randomize(self):
+        c1 = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
+        c2 = (random.randrange(0, 128), random.randrange(0, 128), random.randrange(0, 128))
+        self.setColors(c1, c2)
 
     def init(self):
         data = []
@@ -115,18 +124,13 @@ if __name__ == "__main__":
 
     g = GameOfLife(t)
 
-    def helperRestart():
-        c1 = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
-        c2 = (random.randrange(0, 128), random.randrange(0, 128), random.randrange(0, 128))
-        g.setColors(c1, c2)
-
     # start out with random colors
-    helperRestart()
+    g.randomize()
 
     def helper():
         if g.finished():
             g.restart()
-            helperRestart()
+            g.randomize()
         g.draw()
 
     t.debug_loop(helper)

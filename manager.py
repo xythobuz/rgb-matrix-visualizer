@@ -65,7 +65,7 @@ if __name__ == "__main__":
     m.add(ScrollText(t, "And this twice...", 2))
     m.add(Solid(t, 1.0))
 
-    m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0))
+    m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0, True))
     m.add(Solid(t, 1.0))
 
     m.restart()
