@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 
@@ -29,25 +29,36 @@ class Manager:
                 self.screens[self.index][0].restart()
 
 if __name__ == "__main__":
-    from test import TestGUI
     from splash import SplashScreen
     #from weather import WeatherScreen
     from draw import ScrollText
     from solid import Solid
+    from life import GameOfLife
 
-    t = TestGUI(32, 32)
+    import platform
+    t = None
+    if platform.machine() == "armv7l":
+        from pi import PiMatrix
+        t = PiMatrix()
+    else:
+        from test import TestGUI
+        t = TestGUI()
+
     m = Manager(t)
 
     m.add(SplashScreen(t), 2)
-    m.add(Solid(t, 3.0))
+    m.add(Solid(t, 1.0))
 
     #m.add(WeatherScreen(t), 4)
-    #m.add(Solid(t, 3.0))
+    #m.add(Solid(t, 1.0))
 
     m.add(ScrollText(t, "This appears once"))
-    m.add(Solid(t, 3.0))
+    m.add(Solid(t, 1.0))
 
     m.add(ScrollText(t, "And this twice...", 2))
-    m.add(Solid(t, 3.0))
+    m.add(Solid(t, 1.0))
+
+    m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0))
+    m.add(Solid(t, 1.0))
 
     t.debug_loop(m.loop)

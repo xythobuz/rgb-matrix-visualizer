@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 
@@ -7,7 +7,7 @@ class Solid:
         self.gui = g
         self.time = t
         self.color = c
-        self.start = time.time()
+        self.restart()
 
     def restart(self):
         self.start = time.time()
@@ -21,7 +21,13 @@ class Solid:
                 self.gui.set_pixel(x, y, self.color)
 
 if __name__ == "__main__":
-    from test import TestGUI
-    t = TestGUI(32, 32)
+    import platform
+    t = None
+    if platform.machine() == "armv7l":
+        from pi import PiMatrix
+        t = PiMatrix()
+    else:
+        from test import TestGUI
+        t = TestGUI()
     d = ScrollText(t, "Hello, World!")
     t.debug_loop(d.draw)

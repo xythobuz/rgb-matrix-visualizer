@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 class SplashScreen:
     def __init__(self, g, width = 32, height = 32):
@@ -25,8 +25,14 @@ class SplashScreen:
         pass
 
 if __name__ == "__main__":
-    from test import TestGUI
-    t = TestGUI()
+    import platform
+    t = None
+    if platform.machine() == "armv7l":
+        from pi import PiMatrix
+        t = PiMatrix()
+    else:
+        from test import TestGUI
+        t = TestGUI()
     s = SplashScreen(t)
     s.draw()
     t.debug_loop(s.draw)

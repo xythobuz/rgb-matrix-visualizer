@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from bdfparser import Font
 from PIL import Image
@@ -19,9 +19,9 @@ class DrawText:
                 continue
 
             font = Font(os.path.join(fontDir, filename))
-            print(f"{filename} global size is "
-                f"{font.headers['fbbx']} x {font.headers['fbby']} (pixel), "
-                f"it contains {len(font)} glyphs.")
+            #print(f"{filename} global size is "
+            #    f"{font.headers['fbbx']} x {font.headers['fbby']} (pixel), "
+            #    f"it contains {len(font)} glyphs.")
 
             # TODO hard-coded per-font offsets
             offset = 0
@@ -67,9 +67,7 @@ class ScrollText:
         self.speed = 1.0 / s
 
         self.width = self.drawer.text(self.text)
-        self.offset = -self.gui.width
-        self.last = time.time()
-        self.count = 0
+        self.restart()
 
     def restart(self):
         self.offset = -self.gui.width
@@ -91,7 +89,13 @@ class ScrollText:
         self.drawer.text(self.text, self.offset)
 
 if __name__ == "__main__":
-    from test import TestGUI
-    t = TestGUI(32, 32)
+    import platform
+    t = None
+    if platform.machine() == "armv7l":
+        from pi import PiMatrix
+        t = PiMatrix()
+    else:
+        from test import TestGUI
+        t = TestGUI()
     d = ScrollText(t, "Hello, World!")
     t.debug_loop(d.draw)

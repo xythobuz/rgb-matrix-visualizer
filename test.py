@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pygame
 
@@ -38,6 +38,9 @@ class TestGUI:
         self.exit()
 
     def set_pixel(self, x, y, color):
+        if (x < 0) or (y < 0) or (x >= self.width) or (y >= self.height):
+            return
+
         pygame.draw.rect(self.screen, color, pygame.Rect(x * self.multiplier, y * self.multiplier, self.multiplier, self.multiplier))
 
 if __name__ == "__main__":

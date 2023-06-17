@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from pyowm.owm import OWM
 from pyowm.utils.config import get_default_config
 
 import time
 
-api_key = "API_KEY_HERE"
+api_key = "7de9d39fd4476f811000ceecbbe69376"
 
 class WeatherScreen:
     def __init__(self, gui, latitude = 47.7174, longitude = 9.3924, language = "de", refresh = 600, width = 32, height = 32):
@@ -59,8 +59,14 @@ class WeatherScreen:
         pass
 
 if __name__ == "__main__":
-    from test import TestGUI
-    t = TestGUI()
+    import platform
+    t = None
+    if platform.machine() == "armv7l":
+        from pi import PiMatrix
+        t = PiMatrix()
+    else:
+        from test import TestGUI
+        t = TestGUI()
     s = WeatherScreen(t)
     s.draw()
     t.debug_loop(s.draw)
