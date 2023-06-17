@@ -10,6 +10,16 @@ Just run
 
 and go from there.
 
+## Dependencies
+
+You always need
+
+    pip install pil
+    pip install bdfparser
+    pip install "qrcode[pil]"
+
+The rest depends on the output device chosen.
+
 ## Licensing
 
 This project is licensed as beer-ware:

@@ -9,9 +9,12 @@
 
 import platform
 
+def isPi():
+    return platform.machine() == "armv7l"
+
 def getTarget():
     t = None
-    if platform.machine() == "armv7l":
+    if isPi():
         from pi import PiMatrix
         t = PiMatrix()
     else:

@@ -14,7 +14,10 @@ if __name__ == "__main__":
     from life import GameOfLife
     from net import CheckHTTP
     from image import ImageScreen
+    from qr import QRScreen
     from manager import Manager
+
+    url = "http://ubabot.frubar.net"
 
     import util
     t = util.getTarget()
@@ -25,7 +28,9 @@ if __name__ == "__main__":
     t.loop_end()
 
     success = Manager(t)
-    success.add(ImageScreen(t, "drinka.gif", 0.2, 3, 20.0))
+    success.add(ImageScreen(t, "drinka.gif", 0.2, 2, 20.0))
+    success.add(Solid(t, 1.0))
+    success.add(QRScreen(t, url, 30.0))
     success.add(Solid(t, 1.0))
 
     fail = Manager(t)
@@ -35,7 +40,7 @@ if __name__ == "__main__":
     fail.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
     fail.add(Solid(t, 2.0))
 
-    d = CheckHTTP("http://ubabot.frubar.net")
+    d = CheckHTTP(url)
     d.success(success)
     d.fail(fail)
 
