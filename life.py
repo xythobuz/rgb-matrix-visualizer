@@ -60,6 +60,9 @@ class GameOfLife:
                     continue
                 if self.alive(data, x + xOff, y + yOff):
                     c += 1
+                    if c == 4:
+                        # 4 or more is not interesting for us
+                        break
         return c
 
     def step(self):
@@ -113,8 +116,9 @@ if __name__ == "__main__":
     g = GameOfLife(t)
 
     def helperRestart():
-        c = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
-        g.setColors(c, (0, 0, 0))
+        c1 = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
+        c2 = (random.randrange(0, 128), random.randrange(0, 128), random.randrange(0, 128))
+        g.setColors(c1, c2)
 
     # start out with random colors
     helperRestart()
