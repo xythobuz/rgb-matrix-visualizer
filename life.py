@@ -4,11 +4,10 @@ import time
 import random
 
 class GameOfLife:
-    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 30.0):
+    def __init__(self, g, f = 20, c1 = (255, 255, 255), c2 = (0, 0, 0), t = 20.0):
         self.gui = g
         self.interval = 1.0 / f
-        self.colorFG = c1
-        self.colorBG = c2
+        self.setColors(c1, c2)
         self.timeout = t
         random.seed()
         self.restart()
@@ -18,6 +17,10 @@ class GameOfLife:
         self.start = time.time()
         self.last = time.time()
         self.done = False
+
+    def setColors(self, c1, c2):
+        self.colorFG = c1
+        self.colorBG = c2
 
     def init(self):
         data = []
@@ -80,8 +83,8 @@ class GameOfLife:
 
     def draw(self):
         if (time.time() - self.last) > self.interval:
-            self.step()
             self.last = time.time()
+            self.step()
 
         for x in range(0, self.gui.width):
             for y in range(0, self.gui.height):
@@ -102,9 +105,17 @@ if __name__ == "__main__":
 
     g = GameOfLife(t)
 
+    def helperRestart():
+        c = (random.randrange(0, 256), random.randrange(0, 256), random.randrange(0, 256))
+        g.setColors(c, (0, 0, 0))
+
+    # start out with random colors
+    helperRestart()
+
     def helper():
         if g.finished():
             g.restart()
+            helperRestart()
         g.draw()
 
     t.debug_loop(helper)

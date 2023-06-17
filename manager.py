@@ -22,19 +22,18 @@ class Manager:
         if self.screens[self.index][1] == None:
             # let screen decide when it is done
             if self.screens[self.index][0].finished():
-                self.index = (self.index + 1) % len(self.screens)
                 self.lastTime = time.time()
+                self.index = (self.index + 1) % len(self.screens)
                 self.screens[self.index][0].restart()
         else:
             # use given timeout
             if (time.time() - self.lastTime) > self.screens[self.index][1]:
-                self.index = (self.index + 1) % len(self.screens)
                 self.lastTime = time.time()
+                self.index = (self.index + 1) % len(self.screens)
                 self.screens[self.index][0].restart()
 
 if __name__ == "__main__":
     from splash import SplashScreen
-    #from weather import WeatherScreen
     from draw import ScrollText
     from solid import Solid
     from life import GameOfLife
@@ -52,9 +51,6 @@ if __name__ == "__main__":
 
     m.add(SplashScreen(t), 2)
     m.add(Solid(t, 1.0))
-
-    #m.add(WeatherScreen(t), 4)
-    #m.add(Solid(t, 1.0))
 
     m.add(ScrollText(t, "This appears once"))
     m.add(Solid(t, 1.0))
