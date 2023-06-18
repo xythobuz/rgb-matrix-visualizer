@@ -63,7 +63,7 @@ if __name__ == "__main__":
     t = util.getTarget()
 
     d = CheckHTTP("http://xythobuz.de")
-    d.success(ScrollText(t, "Success"))
-    d.fail(ScrollText(t, "Failure"))
+    d.success(ScrollText(t, "Success", "ib8x8u"))
+    d.fail(ScrollText(t, "Failure", "ib8x8u"))
 
     t.debug_loop(d.draw)

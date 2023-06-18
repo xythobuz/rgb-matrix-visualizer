@@ -63,19 +63,19 @@ if __name__ == "__main__":
 
     m = Manager(t)
 
-    m.add(ScrollText(t, "This appears once"))
+    m.add(ScrollText(t, "This appears once", "ib8x8u"))
     m.add(Solid(t, 1.0))
 
-    m.add(ScrollText(t, "And this twice...", 2))
+    m.add(ScrollText(t, "And this twice...", "ib8x8u", 2))
     m.add(Solid(t, 1.0))
 
     m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0, True))
     m.add(Solid(t, 1.0))
 
     sub = Manager(t)
-    sub.add(ScrollText(t, "Hello"))
+    sub.add(ScrollText(t, "Hello", "ib8x8u"))
     sub.add(Solid(t, 1.0, (0, 255, 0)))
-    sub.add(ScrollText(t, "World"))
+    sub.add(ScrollText(t, "World", "ib8x8u"))
     sub.add(Solid(t, 1.0, (0, 0, 255)))
     m.add(sub)
     m.add(Solid(t, 1.0))

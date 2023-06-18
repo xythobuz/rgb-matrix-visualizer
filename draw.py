@@ -18,7 +18,7 @@ class DrawText:
 
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         fontDir = os.path.join(scriptDir, "fonts")
-        self.fonts = []
+        self.fonts = {}
         for f in os.listdir(os.fsencode(fontDir)):
             filename = os.fsdecode(f)
 
@@ -34,12 +34,14 @@ class DrawText:
             offset = 0
             if filename == "iv18x16u.bdf":
                 offset = 6
+            elif filename == "ib8x8u.bdf":
+                offset = 10
 
             data = (font, offset, {})
-            self.fonts.append(data)
+            self.fonts[filename[:-4]] = data
 
-    def getGlyph(self, c):
-        f, o, cache = self.fonts[0] # TODO selection of fonts
+    def getGlyph(self, c, font):
+        f, o, cache = self.fonts[font]
 
         # only render glyphs once, cache resulting image data
         if not c in cache:
@@ -70,7 +72,7 @@ class DrawText:
                 p = g.getpixel((x, y))
                 self.gui.set_pixel(xTarget, yOff + y, p)
 
-    def text(self, s, offset = 0, earlyAbort = True):
+    def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0):
         w = 0
         for c in s:
             xOff = -offset + w
@@ -78,22 +80,23 @@ class DrawText:
                 if xOff >= self.gui.width:
                     break
 
-            g, y = self.getGlyph(c)
+            g, y = self.getGlyph(c, f)
             w += g.width
 
             if xOff >= -10: # some wiggle room so chars dont disappear
-                self.drawGlyph(g, xOff, y)
+                self.drawGlyph(g, xOff, y + yOff)
         return w
-import sys
+
 class ScrollText:
-    def __init__(self, g, t, i = 1, s = 75):
+    def __init__(self, g, t, f, i = 1, s = 75):
         self.gui = g
         self.drawer = DrawText(self.gui)
         self.text = t
+        self.font = f
         self.iterations = i
         self.speed = 1.0 / s
 
-        self.width = self.drawer.text(self.text, 0, False)
+        self.width = self.drawer.text(self.text, self.font, 0, False)
         self.restart()
 
     def restart(self):
@@ -113,11 +116,12 @@ class ScrollText:
                 self.offset = -self.gui.width
                 self.count += 1
 
-        self.drawer.text(self.text, self.offset, True)
+        self.drawer.text(self.text, self.font, self.offset, True)
 
 if __name__ == "__main__":
     import util
     t = util.getTarget()
 
-    d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?")
+    #d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?", "iv18x16u")
+    d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?", "ib8x8u")
     t.debug_loop(d.draw)
