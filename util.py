@@ -7,17 +7,35 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
-import platform
+targetIsPi = None
 
 def isPi():
-    return platform.machine() == "armv7l"
+    global targetIsPi
+
+    if targetIsPi == None:
+        getTarget()
+    return targetIsPi
 
 def getTarget():
-    t = None
-    if isPi():
+    global targetIsPi
+
+    target = None
+    try:
         from pi import PiMatrix
-        t = PiMatrix()
-    else:
+        target = PiMatrix()
+
+        if targetIsPi == None:
+            # only print once
+            print("Raspberry Pi Adafruit RGB LED Matrix detected")
+
+        targetIsPi = True
+    except ModuleNotFoundError:
         from test import TestGUI
-        t = TestGUI()
-    return t
+        target = TestGUI()
+
+        if targetIsPi == None:
+            # only print once
+            print("Falling back to GUI debug interface")
+
+        targetIsPi = False
+    return target

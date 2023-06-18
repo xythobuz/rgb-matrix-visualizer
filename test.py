@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Uses the pygame SDL wrapper:
+# https://github.com/pygame/pygame
+#
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
 # <xythobuz@xythobuz.de> wrote this file.  As long as you retain this notice
@@ -27,6 +30,9 @@ class TestGUI:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return True
+            elif event.type == pygame.KEYUP:
+                if (event.key == pygame.K_q) or (event.key == pygame.K_ESCAPE):
+                    return True
 
         self.screen.fill("black")
         return False

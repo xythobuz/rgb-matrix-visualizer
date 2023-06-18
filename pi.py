@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# Uses the Python bindings for the Raspberry Pi RGB LED Matrix library:
+# https://github.com/hzeller/rpi-rgb-led-matrix
+#
+# And the pillow Python Imaging Library:
+# https://github.com/python-pillow/Pillow
+#
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
 # <xythobuz@xythobuz.de> wrote this file.  As long as you retain this notice

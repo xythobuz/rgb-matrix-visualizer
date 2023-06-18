@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
 
+# Uses the Python BDF format bitmap font parser:
+# https://github.com/tomchen/bdfparser
+#
+# And the pillow Python Imaging Library:
+# https://github.com/python-pillow/Pillow
+#
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
 # <xythobuz@xythobuz.de> wrote this file.  As long as you retain this notice
@@ -13,8 +19,11 @@ import os
 import time
 
 class DrawText:
-    def __init__(self, g):
+    def __init__(self, g, fg = (255, 255, 255), bg = (0, 0, 0), c = (0, 255, 0)):
         self.gui = g
+        self.fg = fg
+        self.bg = bg
+        self.color = c
 
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         fontDir = os.path.join(scriptDir, "fonts")
@@ -25,23 +34,37 @@ class DrawText:
             if not filename.lower().endswith(".bdf"):
                 continue
 
-            font = Font(os.path.join(fontDir, filename))
-            #print(f"{filename} global size is "
-            #    f"{font.headers['fbbx']} x {font.headers['fbby']} (pixel), "
-            #    f"it contains {len(font)} glyphs.")
-
-            # TODO hard-coded per-font offsets
+            # TODO hard-coded per-font offsets and spacing adjustment
             offset = 0
+            spacing = 0
             if filename == "iv18x16u.bdf":
                 offset = 6
             elif filename == "ib8x8u.bdf":
                 offset = 10
+            elif filename == "lemon.bdf":
+                offset = 8
+                spacing = -3
+            elif filename == "antidote.bdf":
+                offset = 9
+                spacing = -1
+            elif filename == "uushi.bdf":
+                offset = 8
+                spacing = -2
+            elif filename == "tom-thumb.bdf":
+                offset = 12
+                spacing = 2
 
-            data = (font, offset, {})
+            font = Font(os.path.join(fontDir, filename))
+            data = (font, offset, {}, spacing)
             self.fonts[filename[:-4]] = data
 
     def getGlyph(self, c, font):
-        f, o, cache = self.fonts[font]
+        if not isinstance(font, str):
+            # fall-back to first available font
+            f, offset, cache, spacing = next(iter(self.fonts))
+        else:
+            # users font choice
+            f, offset, cache, spacing = self.fonts[font]
 
         # only render glyphs once, cache resulting image data
         if not c in cache:
@@ -51,15 +74,19 @@ class DrawText:
             g = g.replace(1, 2).replace(0, 1).replace(2, 0)
 
             # render to pixel data
+            bytesdict = {
+                0: int(self.fg[2] << 16 | self.fg[1] << 8 | self.fg[0]).to_bytes(4, byteorder = "little"),
+                1: int(self.bg[2] << 16 | self.bg[1] << 8 | self.bg[0]).to_bytes(4, byteorder = "little"),
+                2: int(self.color[2] << 16 | self.color[1] << 8 | self.color[0]).to_bytes(4, byteorder = "little"),
+            }
             img = Image.frombytes('RGBA',
                                 (g.width(), g.height()),
-                                g.tobytes('RGBA'))
-
+                                g.tobytes('RGBA', bytesdict))
             cache[c] = img
 
-        return (cache[c], o)
+        return (cache[c], offset, spacing)
 
-    def drawGlyph(self, g, xOff, yOff):
+    def drawGlyph(self, g, xOff, yOff, spacing):
         if xOff >= self.gui.width:
             return
 
@@ -72,6 +99,10 @@ class DrawText:
                 p = g.getpixel((x, y))
                 self.gui.set_pixel(xTarget, yOff + y, p)
 
+        for x in range(0, spacing):
+            for y in range(0, g.height):
+                self.gui.set_pixel(xOff + x + g.width, yOff + y, self.bg)
+
     def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0):
         w = 0
         for c in s:
@@ -80,17 +111,17 @@ class DrawText:
                 if xOff >= self.gui.width:
                     break
 
-            g, y = self.getGlyph(c, f)
-            w += g.width
+            g, y, spacing = self.getGlyph(c, f)
+            w += g.width + spacing
 
-            if xOff >= -10: # some wiggle room so chars dont disappear
-                self.drawGlyph(g, xOff, y + yOff)
+            if xOff >= -16: # some wiggle room so chars dont disappear
+                self.drawGlyph(g, xOff, y + yOff, spacing)
         return w
 
 class ScrollText:
-    def __init__(self, g, t, f, i = 1, s = 75):
+    def __init__(self, g, t, f, i = 1, s = 75, fg = (255, 255, 255), bg = (0, 0, 0)):
         self.gui = g
-        self.drawer = DrawText(self.gui)
+        self.drawer = DrawText(self.gui, fg, bg)
         self.text = t
         self.font = f
         self.iterations = i
@@ -122,6 +153,27 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
 
-    #d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?", "iv18x16u")
-    d = ScrollText(t, "This is a long scrolling text. Is it too fast or maybe too slow?", "ib8x8u")
-    t.debug_loop(d.draw)
+    from splash import SplashScreen
+    splash = SplashScreen(t)
+    t.loop_start()
+    splash.draw()
+    t.loop_end()
+
+    from manager import Manager
+    m = Manager(t)
+
+    m.add(ScrollText(t, "tom-thumb Abcdefgh tom-thumb", "tom-thumb",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+    m.add(ScrollText(t, "antidote Abcdefgh antidote", "antidote",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+    m.add(ScrollText(t, "uushi Abcdefgh uushi", "uushi",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+    m.add(ScrollText(t, "lemon Abcdefgh lemon", "lemon",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+    m.add(ScrollText(t, "ib8x8u Abcdefgh ib8x8u", "ib8x8u",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+    m.add(ScrollText(t, "iv18x16u Abcdefgh iv18x16u", "iv18x16u",
+                     1, 75, (0, 255, 0), (0, 0, 255)))
+
+    m.restart()
+    t.debug_loop(m.draw)

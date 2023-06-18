@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Uses the pillow Python Imaging Library:
+# https://github.com/python-pillow/Pillow
+#
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
 # <xythobuz@xythobuz.de> wrote this file.  As long as you retain this notice
@@ -12,7 +15,7 @@ import time
 import os
 
 class ImageScreen:
-    def __init__(self, g, p, t = 0.2, i = 1, to = 20.0, bg = None):
+    def __init__(self, g, p, t = 0.2, i = 1, to = 10.0, bg = None):
         self.gui = g
         self.time = t
         self.iterations = i
@@ -22,6 +25,22 @@ class ImageScreen:
         scriptDir = os.path.dirname(os.path.realpath(__file__))
         self.path = os.path.join(scriptDir, "images", p)
         self.image = Image.open(self.path)
+
+        # for some reason non-animated images don't even have this attribute
+        if not hasattr(self.image, "is_animated"):
+            self.image.is_animated = False
+            self.image.n_frames = 1
+
+        # automatically crop and scale large images
+        if not self.image.is_animated and ((self.image.width > self.gui.width) or (self.image.height > self.gui.height)):
+            self.image = self.image.crop(self.image.getbbox())
+            self.image = self.image.resize((self.gui.width, self.gui.height),
+                                           Image.Resampling.NEAREST)
+
+            # new image object is also missing these
+            self.image.is_animated = False
+            self.image.n_frames = 1
+
         print(p, self.image.width, self.image.height, self.image.is_animated, self.image.n_frames)
 
         self.xOff = int((self.gui.width - self.image.width) / 2)

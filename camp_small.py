@@ -7,6 +7,9 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
+camp_pink = (251, 72, 196)
+camp_green = (63, 255, 33)
+
 if __name__ == "__main__":
     from splash import SplashScreen
     from draw import ScrollText
@@ -30,18 +33,29 @@ if __name__ == "__main__":
     success = Manager(t)
     success.add(ImageScreen(t, "drinka.gif", 0.2, 2, 20.0))
     success.add(Solid(t, 1.0))
-    success.add(QRScreen(t, url, 30.0, "Order:"))
+    success.add(QRScreen(t, url, 30.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0)))
     success.add(Solid(t, 1.0))
 
     fail = Manager(t)
     fail.add(ImageScreen(t, "attention.gif", 0.2, 2, 20.0, (0, 0, 0)))
     fail.add(ScrollText(t, "The UbaBot Cocktail machine is currently closed. Please come back later for more drinks!", "ib8x8u", 2))
-    fail.add(Solid(t, 2.0))
+    fail.add(Solid(t, 1.0))
     fail.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
-    fail.add(Solid(t, 2.0))
+    fail.add(Solid(t, 1.0))
 
     d = CheckHTTP(url)
     d.success(success)
     d.fail(fail)
 
-    t.debug_loop(d.draw)
+    m = Manager(t)
+    m.add(ScrollText(t, "#CCCAMP23", "lemon", 1, 75, camp_green))
+    m.add(Solid(t, 1.0))
+    m.add(ImageScreen(t, "Favicon.png", 0, 1, 10.0))
+    m.add(Solid(t, 1.0))
+    m.add(ScrollText(t, "#CCCAMP23", "lemon", 1, 75, camp_pink))
+    m.add(Solid(t, 1.0))
+    m.add(d)
+    m.add(Solid(t, 1.0))
+
+    m.restart()
+    t.debug_loop(m.draw)
