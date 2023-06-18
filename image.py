@@ -13,6 +13,7 @@
 from PIL import Image
 import time
 import os
+import util
 
 class ImageScreen:
     def __init__(self, g, p, t = 0.2, i = 1, to = 10.0, bg = None):
@@ -34,8 +35,13 @@ class ImageScreen:
         # automatically crop and scale large images
         if not self.image.is_animated and ((self.image.width > self.gui.width) or (self.image.height > self.gui.height)):
             self.image = self.image.crop(self.image.getbbox())
-            self.image = self.image.resize((self.gui.width, self.gui.height),
-                                           Image.Resampling.NEAREST)
+
+            if util.isPi():
+                # TODO PIL version is too old on Pi
+                self.image = self.image.resize((self.gui.width, self.gui.height))
+            else:
+                self.image = self.image.resize((self.gui.width, self.gui.height),
+                                            Image.Resampling.NEAREST)
 
             # new image object is also missing these
             self.image.is_animated = False
