@@ -122,13 +122,16 @@ class ScrollText:
     def __init__(self, g, t, f, i = 1, s = 75, fg = (255, 255, 255), bg = (0, 0, 0)):
         self.gui = g
         self.drawer = DrawText(self.gui, fg, bg)
-        self.text = t
-        self.font = f
         self.iterations = i
         self.speed = 1.0 / s
 
-        self.width = self.drawer.text(self.text, self.font, 0, False)
+        self.setText(t, f)
         self.restart()
+
+    def setText(self, t, f):
+        self.text = t
+        self.font = f
+        self.width = self.drawer.text(self.text, self.font, 0, False)
 
     def restart(self):
         self.offset = -self.gui.width

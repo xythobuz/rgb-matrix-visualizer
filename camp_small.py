@@ -18,12 +18,15 @@ if __name__ == "__main__":
     from net import CheckHTTP
     from image import ImageScreen
     from qr import QRScreen
+    from snake import Snake
+    from gamepad import InputWrapper
     from manager import Manager
 
     url = "http://ubabot.frubar.net"
 
     import util
     t = util.getTarget()
+    i = InputWrapper()
 
     # Loading fonts and graphics takes a while.
     # So show a splash screen while the user waits.
@@ -59,6 +62,8 @@ if __name__ == "__main__":
     m.add(ImageScreen(t, "Favicon.png", 0, 1, 10.0))
     m.add(Solid(t, 1.0))
     m.add(d) # HTTP Check, either "success" or "fail"
+    m.add(Solid(t, 1.0))
+    m.add(Snake(t, i, camp_pink, camp_green))
     m.add(Solid(t, 1.0))
     m.add(ScrollText(t, "Your advertisement could appear here. Open a Pull Request on git.xythobuz.de/thomas/rgb-matrix-visualizer or send an e-mail to thomas@xythobuz.de", "iv18x16u", 2, 70, camp_green))
     m.add(Solid(t, 1.0))
