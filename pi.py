@@ -17,14 +17,13 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 
 class PiMatrix:
-    def __init__(self):
-        # TODO configurable
-        self.width = 32
-        self.height = 32
+    def __init__(self, w = 32, h = 32):
+        self.width = w
+        self.height = h
 
         options = RGBMatrixOptions()
-        options.rows = 32
-        options.cols = 32
+        options.rows = w
+        options.cols = h
         options.chain_length = 1
         options.parallel = 1
         options.row_address_type = 0
@@ -63,5 +62,5 @@ class PiMatrix:
         self.image.putpixel((int(x), int(y)), color)
 
 if __name__ == "__main__":
-    t = PiMatrix()
+    t = PiMatrix(32, 32)
     t.debug_loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
