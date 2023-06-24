@@ -22,7 +22,11 @@ def getTarget():
     target = None
     try:
         from pi import PiMatrix
-        target = PiMatrix()
+        pi = PiMatrix()
+
+        # TODO hard-coded adjustments
+        from mapper import MapperColorAdjust
+        target = MapperColorAdjust(pi)
 
         if targetIsPi == None:
             # only print once

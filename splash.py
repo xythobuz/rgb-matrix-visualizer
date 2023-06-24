@@ -14,16 +14,21 @@ class SplashScreen:
         self.height = height
 
     def draw(self):
-        self.gui.set_pixel(             0,               0, (255, 255, 255))
-        self.gui.set_pixel(             0, self.height - 1, (  0,   0, 255))
-        self.gui.set_pixel(self.width - 1,               0, (255,   0,   0))
-        self.gui.set_pixel(self.width - 1, self.height - 1, (  0, 255,   0))
+        for x in range(0, int(self.gui.width / self.width)):
+            for y in range(0, int(self.gui.height / self.height)):
+                self.drawOnce(x * self.width, y * self.height)
+
+    def drawOnce(self, x, y):
+        self.gui.set_pixel(             x,               y, (255, 255, 255))
+        self.gui.set_pixel(             x, self.height - 1 + y, (  0,   0, 255))
+        self.gui.set_pixel(self.width - 1 + x,               y, (255,   0,   0))
+        self.gui.set_pixel(self.width - 1 + x, self.height - 1 + y, (  0, 255,   0))
 
         for i in range(0, int(min(self.width, self.height) / 3)):
-            self.gui.set_pixel((self.width / 2) - 1 + i, (self.height / 2) - 1 + i, (255, 255, 255))
-            self.gui.set_pixel((self.width / 2) - 1 - i, (self.height / 2) - 1 - i, (255, 255, 255))
-            self.gui.set_pixel((self.width / 2) - 1 + i, (self.height / 2) - 1 - i, (255, 255, 255))
-            self.gui.set_pixel((self.width / 2) - 1 - i, (self.height / 2) - 1 + i, (255, 255, 255))
+            self.gui.set_pixel((self.width / 2) - 1 + i + x, (self.height / 2) - 1 + i + y, (255, 255, 255))
+            self.gui.set_pixel((self.width / 2) - 1 - i + x, (self.height / 2) - 1 - i + y, (255, 255, 255))
+            self.gui.set_pixel((self.width / 2) - 1 + i + x, (self.height / 2) - 1 - i + y, (255, 255, 255))
+            self.gui.set_pixel((self.width / 2) - 1 - i + x, (self.height / 2) - 1 + i + y, (255, 255, 255))
 
     def finished(self):
         return True

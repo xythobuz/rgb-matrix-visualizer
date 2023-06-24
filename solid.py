@@ -13,8 +13,11 @@ class Solid:
     def __init__(self, g, t = 1.0, c = (0, 0, 0)):
         self.gui = g
         self.time = t
-        self.color = c
+        self.setColor(c)
         self.restart()
+
+    def setColor(self, c):
+        self.color = c
 
     def restart(self):
         self.start = time.time()
@@ -31,5 +34,31 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
 
-    d = Solid(t, 1.0, (0, 255, 0))
-    t.debug_loop(d.draw)
+    colors = [
+        (251, 72, 196), # camp23 pink
+        (63, 255, 33), # camp23 green
+        (255, 0, 0),
+        (0, 255, 0),
+        (0, 0, 255),
+        (255, 255, 0),
+        (0, 255, 255),
+        (255, 0, 255),
+        (255, 255, 255),
+    ]
+    ci = 0
+
+    d = Solid(t, 1.0, colors[ci])
+
+    s = time.time()
+    def helper():
+        global s, colors, ci
+
+        if (time.time() - s) >= 1.0:
+            s = time.time()
+            ci = (ci + 1) % len(colors)
+            c = colors[ci]
+            d.setColor(c)
+
+        d.draw()
+
+    t.debug_loop(helper)

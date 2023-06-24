@@ -18,6 +18,10 @@ class TestGUI:
         self.height = height
         self.multiplier = multiplier
 
+        # compatibility to PiMatrix
+        self.panelW = self.width
+        self.panelH = self.height
+
         pygame.display.init()
         self.screen = pygame.display.set_mode((self.width * self.multiplier, self.height * self.multiplier))
         self.clock = pygame.time.Clock()

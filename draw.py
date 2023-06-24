@@ -166,17 +166,17 @@ if __name__ == "__main__":
     m = Manager(t)
 
     m.add(ScrollText(t, "tom-thumb Abcdefgh tom-thumb", "tom-thumb",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
     m.add(ScrollText(t, "antidote Abcdefgh antidote", "antidote",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
     m.add(ScrollText(t, "uushi Abcdefgh uushi", "uushi",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
     m.add(ScrollText(t, "lemon Abcdefgh lemon", "lemon",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
     m.add(ScrollText(t, "ib8x8u Abcdefgh ib8x8u", "ib8x8u",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
     m.add(ScrollText(t, "iv18x16u Abcdefgh iv18x16u", "iv18x16u",
-                     1, 75, (0, 255, 0), (0, 0, 255)))
+                     1, 75, (0, 255, 0), (0, 0, 25)))
 
     m.restart()
     t.debug_loop(m.draw)

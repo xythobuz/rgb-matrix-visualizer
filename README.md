@@ -14,10 +14,7 @@ and go from there.
 
 You always need:
 
-    pip install pil
-    pip install bdfparser
-    pip install "qrcode[pil]"
-    pip install evdev
+    pip install Pillow bdfparser "qrcode[pil]" evdev
 
 For evdev to find all devices you may need to add your user to the `input` group or run the scripts as root.
 
