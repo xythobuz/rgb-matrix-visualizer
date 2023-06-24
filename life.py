@@ -149,4 +149,4 @@ if __name__ == "__main__":
             g.restart()
         g.draw()
 
-    t.debug_loop(helper)
+    t.loop(helper)

@@ -164,4 +164,4 @@ if __name__ == "__main__":
     i = InputWrapper()
 
     d = Snake(t, i)
-    t.debug_loop(d.draw)
+    t.loop(d.draw)

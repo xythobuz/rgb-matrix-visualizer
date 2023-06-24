@@ -66,4 +66,4 @@ if __name__ == "__main__":
     d.success(ScrollText(t, "Success", "ib8x8u"))
     d.fail(ScrollText(t, "Failure", "ib8x8u"))
 
-    t.debug_loop(d.draw)
+    t.loop(d.draw)

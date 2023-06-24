@@ -263,4 +263,4 @@ if __name__ == "__main__":
     i = InputWrapper()
 
     d = Tetris(t, i, 0.1)
-    t.debug_loop(d.draw)
+    t.loop(d.draw)

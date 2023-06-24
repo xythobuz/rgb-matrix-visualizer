@@ -76,7 +76,7 @@ class PiMatrix:
     def loop_end(self):
         self.matrix.SetImage(self.image.convert('RGB'))
 
-    def debug_loop(self, func = None):
+    def loop(self, func = None):
         while True:
             if self.loop_start():
                 break
@@ -92,4 +92,4 @@ class PiMatrix:
 
 if __name__ == "__main__":
     t = PiMatrix(32, 32)
-    t.debug_loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
+    t.loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))

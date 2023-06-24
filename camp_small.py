@@ -69,4 +69,4 @@ if __name__ == "__main__":
     m.add(Solid(t, 1.0))
 
     m.restart()
-    t.debug_loop(m.draw)
+    t.loop(m.draw)

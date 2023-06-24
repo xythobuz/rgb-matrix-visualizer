@@ -45,7 +45,7 @@ class TestGUI:
         pygame.display.flip()
         self.clock.tick(30)
 
-    def debug_loop(self, func = None):
+    def loop(self, func = None):
         while True:
             if self.loop_start():
                 break
@@ -62,4 +62,4 @@ class TestGUI:
 
 if __name__ == "__main__":
     t = TestGUI(32, 32)
-    t.debug_loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
+    t.loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))

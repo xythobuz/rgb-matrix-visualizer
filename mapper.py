@@ -23,8 +23,8 @@ class MapperNull:
     def loop_end(self):
         self.gui.loop_end()
 
-    def debug_loop(self, func = None):
-        self.gui.debug_loop(func)
+    def loop(self, func = None):
+        self.gui.loop(func)
 
     def set_pixel(self, x, y, color):
         self.gui.set_pixel(x, y, color)
@@ -36,9 +36,9 @@ class MapperNull:
 class MapperColorAdjust(MapperNull):
     def set_pixel(self, x, y, color):
         # right-most panel, with maximum x coordinates,
-        # is "old" type with less bright LEDs.
-        # rest of panels to the left are brighter.
-        # so adjust brightness of left panel rg channels down.
+        # is "new" type with brighter LEDs.
+        # rest of panels to the left are less bright.
+        # so adjust brightness of right panel rg channels down.
         if x < self.gui.panelW:
             color = (int(color[0] * 0.75), int(color[1] * 0.75), color[2])
 

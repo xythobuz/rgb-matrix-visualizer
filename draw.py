@@ -179,4 +179,4 @@ if __name__ == "__main__":
                      1, 75, (0, 255, 0), (0, 0, 25)))
 
     m.restart()
-    t.debug_loop(m.draw)
+    t.loop(m.draw)

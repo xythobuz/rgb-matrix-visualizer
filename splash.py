@@ -40,4 +40,4 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
     s = SplashScreen(t)
-    t.debug_loop(s.draw)
+    t.loop(s.draw)

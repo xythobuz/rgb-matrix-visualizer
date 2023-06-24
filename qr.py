@@ -91,4 +91,4 @@ if __name__ == "__main__":
     t = util.getTarget()
 
     d = QRScreen(t, "Hello World", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
-    t.debug_loop(d.draw)
+    t.loop(d.draw)

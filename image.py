@@ -109,4 +109,4 @@ if __name__ == "__main__":
         m.add(ImageScreen(t, filename))
 
     m.restart()
-    t.debug_loop(m.draw)
+    t.loop(m.draw)
