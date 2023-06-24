@@ -34,6 +34,8 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
 
+    d = Solid(t, 1.0, (0, 0, 0))
+
     colors = [
         (251, 72, 196), # camp23 pink
         (63, 255, 33), # camp23 green
@@ -45,18 +47,24 @@ if __name__ == "__main__":
         (255, 0, 255),
         (255, 255, 255),
     ]
-    ci = 0
-
-    d = Solid(t, 1.0, colors[ci])
 
     s = time.time()
+    ci = 0
+    n = 0
+    c = (0, 0, 0)
     def helper():
-        global s, colors, ci
+        global s, colors, ci, n, c
 
-        if (time.time() - s) >= 1.0:
+        if (time.time() - s) >= 0.1:
             s = time.time()
-            ci = (ci + 1) % len(colors)
-            c = colors[ci]
+            n += 1
+            if n >= 15:
+                ci = (ci + 1) % len(colors)
+                n = 0
+                c = (0, 0, 0)
+            elif n <= 10:
+                c = colors[ci]
+                c = (int(c[0] * (0.1 * n)), int(c[1] * (0.1 * n)), int(c[2] * (0.1 * n)))
             d.setColor(c)
 
         d.draw()

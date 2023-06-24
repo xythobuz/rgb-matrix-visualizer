@@ -54,6 +54,12 @@ class DrawText:
                 offset = 12
                 spacing = 2
 
+            # center vertically, in case of
+            # multiple stacked panels
+            # TODO hard-coded offsets assume 32x32 panels
+            if self.gui.height > 32:
+                offset += 16
+
             font = Font(os.path.join(fontDir, filename))
             data = (font, offset, {}, spacing)
             self.fonts[filename[:-4]] = data

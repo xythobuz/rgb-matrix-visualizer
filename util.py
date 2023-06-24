@@ -7,39 +7,60 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
-targetIsPi = None
+targetPlatform = None
 
 def isPi():
-    global targetIsPi
+    global targetPlatform
 
-    if targetIsPi == None:
+    if targetPlatform == None:
         getTarget()
-    return targetIsPi
+
+    return targetPlatform == "pi"
+
+def isPico():
+    global targetPlatform
+
+    if targetPlatform == None:
+        getTarget()
+
+    return targetPlatform == "pico"
 
 def getTarget():
-    global targetIsPi
+    global targetPlatform
 
     target = None
     try:
+        # First we try the Raspberry Pi interface
         from pi import PiMatrix
         pi = PiMatrix()
 
         # TODO hard-coded adjustments
-        from mapper import MapperColorAdjust
-        target = MapperColorAdjust(pi)
+        from mapper import MapperColorAdjust, MapperStripToRect
+        col = MapperColorAdjust(pi)
+        target = MapperStripToRect(col)
 
-        if targetIsPi == None:
+        if targetPlatform == None:
             # only print once
             print("Raspberry Pi Adafruit RGB LED Matrix detected")
+        targetPlatform = "pi"
+    except:
+        try:
+            # Next we try the Pico Interstate75 interface
+            from pico import PicoMatrix
+            target = PicoMatrix()
 
-        targetIsPi = True
-    except ModuleNotFoundError:
-        from test import TestGUI
-        target = TestGUI()
+            if targetPlatform == None:
+                # only print once
+                print("Raspberry Pi Pico Interstate75 RGB LED Matrix detected")
+            targetPlatform = "pico"
+        except:
+            # If this fails fall back to the SDL/pygame GUI
+            from test import TestGUI
+            target = TestGUI()
 
-        if targetIsPi == None:
-            # only print once
-            print("Falling back to GUI debug interface")
+            if targetPlatform == None:
+                # only print once
+                print("Falling back to GUI debug interface")
+            targetPlatform = "tk"
 
-        targetIsPi = False
     return target
