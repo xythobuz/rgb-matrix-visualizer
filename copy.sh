@@ -11,6 +11,8 @@ cp solid.py /pyboard
 cp splash.py /pyboard
 cp life.py /pyboard
 cp qr.py /pyboard
+cp camp_pico.py /pyboard
+cp scroll.py /pyboard
 cp $1 /pyboard/main.py
 EOF
 else
@@ -25,5 +27,7 @@ cp solid.py /pyboard
 cp splash.py /pyboard
 cp life.py /pyboard
 cp qr.py /pyboard
+cp camp_pico.py /pyboard
+cp scroll.py /pyboard
 EOF
 fi

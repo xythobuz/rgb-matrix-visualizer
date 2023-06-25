@@ -14,36 +14,50 @@ import time
 import qrcode
 import util
 
+class PicoImage():
+    def getpixel(self, xy):
+        x, y = xy
+        return self.data[y][x]
+
 class QRScreen:
     def __init__(self, g, d, t = 10.0, h = None, f = None, c1 = (0, 0, 0), c2 = (255, 255, 255)):
         self.gui = g
+        self.data = d
         self.time = t
         self.heading = h
         self.font = f
         self.c1 = c1
         self.c2 = c2
 
-        qr = qrcode.QRCode(
-            box_size = 1,
-            border = 0,
-        )
-        qr.add_data(d)
-        qr.make(fit = True)
+        if isinstance(self.data, str):
+            # Generate QR code with library
+            qr = qrcode.QRCode(
+                box_size = 1,
+                border = 0,
+            )
+            qr.add_data(self.data)
+            qr.make(fit = True)
 
-        if util.isPi():
-            # work-around for weird bug in old qrcode lib?
-            if (self.c1 == (0, 0, 0)) and (self.c2 == (255, 255, 255)):
-                self.image = qr.make_image(fill_color = "black", back_color = "white")
-                self.c1 = (0, 0, 0)
-                self.c2 = (255, 255, 255)
-            elif (self.c1 == (255, 255, 255)) and (self.c2 == (0, 0, 0)):
-                self.image = qr.make_image(fill_color = "white", back_color = "black")
-                self.c1 = (255, 255, 255)
-                self.c2 = (0, 0, 0)
+            if util.isPi():
+                # work-around for weird bug in old qrcode lib?
+                if (self.c1 == (0, 0, 0)) and (self.c2 == (255, 255, 255)):
+                    self.image = qr.make_image(fill_color = "black", back_color = "white")
+                    self.c1 = (0, 0, 0)
+                    self.c2 = (255, 255, 255)
+                elif (self.c1 == (255, 255, 255)) and (self.c2 == (0, 0, 0)):
+                    self.image = qr.make_image(fill_color = "white", back_color = "black")
+                    self.c1 = (255, 255, 255)
+                    self.c2 = (0, 0, 0)
+                else:
+                    raise RuntimeError("QR colors other than black/white not supported on Pi")
             else:
-                raise RuntimeError("QR colors other than black/white not supported on Pi")
+                self.image = qr.make_image(fill_color = self.c1, back_color = self.c2)
         else:
-            self.image = qr.make_image(fill_color = self.c1, back_color = self.c2)
+            # Show pre-generated QR code image
+            self.image = PicoImage()
+            self.image.height = len(self.data)
+            self.image.width = len(self.data[0])
+            self.image.data = self.data
 
         if self.heading != None:
             DrawText = util.getTextDrawer()
@@ -88,7 +102,24 @@ class QRScreen:
 
 if __name__ == "__main__":
     import util
+    import os
+
     t = util.getTarget()
 
     d = QRScreen(t, "Hello World", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
+
+    # dump generated QR image to console, for embedding in Pico script
+    print("Dumping QR image to qr_tmp.txt")
+    with open("qr_tmp.txt", "w") as f:
+        f.write("# QR code image for \"" + d.data + "\"" + os.linesep)
+        f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
+        f.write("qr_data = [" + os.linesep)
+        for y in range(0, d.image.height):
+            f.write("    [" + os.linesep)
+            for x in range(0, d.image.width):
+                s = str(d.image.getpixel((x, y)))
+                f.write("        " + s + "," + os.linesep)
+            f.write("    ]," + os.linesep)
+        f.write("]" + os.linesep)
+
     t.loop(d.draw)

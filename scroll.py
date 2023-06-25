@@ -13,7 +13,6 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
-from PIL import Image
 import os
 import time
 import util
@@ -34,6 +33,7 @@ class ScrollText:
         self.text = t
         self.font = f
         self.width = self.drawer.text(self.text, self.font, 0, False)
+        print(self.text, self.font, self.width)
 
     def restart(self):
         self.offset = -self.gui.width
@@ -46,6 +46,7 @@ class ScrollText:
     def draw(self):
         if (time.time() - self.last) > self.speed:
             off = (time.time() - self.last) / self.speed
+            print(self.offset, "->", self.offset + int(off))
             self.offset += int(off)
             self.last = time.time()
             if self.offset >= self.width:

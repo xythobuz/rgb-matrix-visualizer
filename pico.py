@@ -69,18 +69,30 @@ class PicoText:
         self.color = c
 
     def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0, compat = True):
+        if not earlyAbort:
+            return self.gui.matrix.display.measure_text(s, scale=1)
+
         pen = self.gui.matrix.display.create_pen(self.fg[0], self.fg[1], self.fg[2])
         self.gui.matrix.display.set_pen(pen)
 
         self.gui.matrix.display.set_font(f)
 
         if not compat:
-            x = 0
+            # absolute positioning
+            x = offset
             y = yOff
         else:
-            # TODO
-            x = 0
-            y = int(self.gui.height / 2 - 4 + yOff)
+            # centered, like BDF DrawText implementation
+            fontOff = 0
+            if f == "bitmap6":
+                fontOff = 3
+            elif f == "bitmap8":
+                fontOff = 4
+            elif f == "bitmap14_outline":
+                fontOff = 7
+
+            x = -offset
+            y = int(self.gui.height / 2 - fontOff + yOff)
 
         self.gui.matrix.display.text(s, x, y, scale=1)
 
