@@ -7,7 +7,7 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
-from draw import ScrollText
+from scroll import ScrollText
 import time
 import random
 

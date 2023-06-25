@@ -14,6 +14,7 @@ class SplashScreen:
         self.height = self.gui.panelH
 
     def draw(self):
+        # repeat the image on each available panel
         for x in range(0, int(self.gui.width / self.width)):
             for y in range(0, int(self.gui.height / self.height)):
                 self.drawOnce(x * self.width, y * self.height)

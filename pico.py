@@ -28,10 +28,16 @@ class PicoMatrix:
 
         self.matrix = interstate75.Interstate75(display = interstate75.DISPLAY_INTERSTATE75_32X32)
 
+        self.black = self.matrix.display.create_pen(0, 0, 0)
+        self.white = self.matrix.display.create_pen(255, 255, 255)
+
         self.loop_start() # initialize with blank image for ScrollText constructor
 
     def loop_start(self):
+        self.matrix.display.set_pen(self.black)
         self.matrix.display.clear()
+        self.matrix.display.set_pen(self.white)
+
         return False # no input, never quit on our own
 
     def loop_end(self):
@@ -52,8 +58,52 @@ class PicoMatrix:
 
         pen = self.matrix.display.create_pen(color[0], color[1], color[2])
         self.matrix.display.set_pen(pen)
+
         self.matrix.display.pixel(int(x), int(y))
 
+class PicoText:
+    def __init__(self, g, fg = (255, 255, 255), bg = (0, 0, 0), c = (0, 255, 0)):
+        self.gui = g
+        self.fg = fg
+        self.bg = bg
+        self.color = c
+
+    def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0, compat = True):
+        pen = self.gui.matrix.display.create_pen(self.fg[0], self.fg[1], self.fg[2])
+        self.gui.matrix.display.set_pen(pen)
+
+        self.gui.matrix.display.set_font(f)
+
+        if not compat:
+            x = 0
+            y = yOff
+        else:
+            # TODO
+            x = 0
+            y = int(self.gui.height / 2 - 4 + yOff)
+
+        self.gui.matrix.display.text(s, x, y, scale=1)
+
 if __name__ == "__main__":
+    import time
+
     t = PicoMatrix(32, 32)
-    t.loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
+    s = PicoText(t)
+
+    start = time.time()
+    i = 0
+    def helper():
+        global s, start, i
+
+        if (time.time() - start) > 2.0:
+            start = time.time()
+            i = (i + 1) % 2
+
+        if i == 0:
+            s.text("Abgj6", "bitmap6", 0, True, 0, False)
+            s.text("Abdgj8", "bitmap8", 0, True, 6 + 2, False)
+            s.text("Ag14", "bitmap14_outline", 0, True, 6 + 2 + 8 + 1, False)
+        else:
+            s.text("Drinks:", "bitmap8", 0)
+
+    t.loop(helper)

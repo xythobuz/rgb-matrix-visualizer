@@ -12,7 +12,7 @@ camp_green = (63, 255, 33)
 
 if __name__ == "__main__":
     from splash import SplashScreen
-    from draw import ScrollText
+    from scroll import ScrollText
     from solid import Solid
     from life import GameOfLife
     from net import CheckHTTP

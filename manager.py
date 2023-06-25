@@ -49,7 +49,7 @@ class Manager:
 
 if __name__ == "__main__":
     from splash import SplashScreen
-    from draw import ScrollText
+    from scroll import ScrollText
     from solid import Solid
     from life import GameOfLife
 

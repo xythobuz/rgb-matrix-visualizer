@@ -13,7 +13,6 @@
 import time
 import qrcode
 import util
-from draw import DrawText
 
 class QRScreen:
     def __init__(self, g, d, t = 10.0, h = None, f = None, c1 = (0, 0, 0), c2 = (255, 255, 255)):
@@ -47,6 +46,7 @@ class QRScreen:
             self.image = qr.make_image(fill_color = self.c1, back_color = self.c2)
 
         if self.heading != None:
+            DrawText = util.getTextDrawer()
             self.text = DrawText(self.gui, self.c1, self.c2)
             self.yOff = self.gui.height - self.image.height
         else:

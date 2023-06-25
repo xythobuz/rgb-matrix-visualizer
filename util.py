@@ -140,3 +140,15 @@ def getRequests():
         return requests.get
 
     return None
+
+def getTextDrawer():
+    try:
+        # Try BDF parser library
+        from bdf import DrawText
+        return DrawText
+    except:
+        # fall back to the Pico Interstate75 implementation
+        from pico import PicoText
+        return PicoText
+
+    return None
