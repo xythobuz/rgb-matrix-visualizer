@@ -48,7 +48,7 @@ class CheckHTTP:
             return
 
         now = time.time()
-        if (self.response == None) or ((now - self.start) >= self.refresh):
+        if (self.response == None) or ((now - self.start) >= self.refresh) or (now < self.start):
             self.start = now
             try:
                 print("Refreshing " + self.url)

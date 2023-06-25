@@ -699,8 +699,7 @@ if True:#__name__ == "__main__":
     from splash import SplashScreen
     from manager import Manager
 
-    #url = "http://ubabot.frubar.net"
-    url = "http://xythobuz.de"
+    url = "http://ubabot.frubar.net"
 
     import util
     t = util.getTarget()

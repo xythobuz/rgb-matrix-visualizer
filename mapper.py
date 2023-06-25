@@ -138,7 +138,7 @@ class MapperReduceBrightness(MapperNull):
         if (now > morning) and (now < night):
             self.factor = 1.0
         else:
-            self.factor = 0.25
+            self.factor = 0.42
 
     def adjust(self, color):
         return (int(color[0] * self.factor), int(color[1] * self.factor), int(color[2] * self.factor))
