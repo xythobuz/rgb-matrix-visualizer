@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+# For the Pimoroni Interstate75 Raspberry Pi Pico RGB LED Matrix interface:
+# https://github.com/pimoroni/pimoroni-pico
 #
 # ----------------------------------------------------------------------------
 # "THE BEER-WARE LICENSE" (Revision 42):
@@ -9,7 +11,6 @@
 # ----------------------------------------------------------------------------
 
 import interstate75
-
 
 class PicoMatrix:
     def __init__(self, w = 32, h = 32):
