@@ -8,10 +8,10 @@
 # ----------------------------------------------------------------------------
 
 class SplashScreen:
-    def __init__(self, g, width = 32, height = 32):
+    def __init__(self, g):
         self.gui = g
-        self.width = width
-        self.height = height
+        self.width = self.gui.panelW
+        self.height = self.gui.panelH
 
     def draw(self):
         for x in range(0, int(self.gui.width / self.width)):

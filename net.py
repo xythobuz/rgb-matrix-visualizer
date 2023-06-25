@@ -69,12 +69,19 @@ class CheckHTTP:
             self.failScreen.draw()
 
 if __name__ == "__main__":
-    from draw import ScrollText
+    from solid import Solid
     import util
     t = util.getTarget()
 
+    # show splash screen while connecting to WiFi on Pico
+    from splash import SplashScreen
+    splash = SplashScreen(t)
+    t.loop_start()
+    splash.draw()
+    t.loop_end()
+
     d = CheckHTTP("http://xythobuz.de")
-    d.success(ScrollText(t, "Success", "ib8x8u"))
-    d.fail(ScrollText(t, "Failure", "ib8x8u"))
+    d.success(Solid(t, 1.0, (0, 255, 0)))
+    d.fail(Solid(t, 1.0, (255, 0, 0)))
 
     t.loop(d.draw)

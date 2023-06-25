@@ -162,6 +162,7 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
 
+    # show splash screen while initializing
     from splash import SplashScreen
     splash = SplashScreen(t)
     t.loop_start()
@@ -171,18 +172,16 @@ if __name__ == "__main__":
     from manager import Manager
     m = Manager(t)
 
-    m.add(ScrollText(t, "tom-thumb Abcdefgh tom-thumb", "tom-thumb",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
-    m.add(ScrollText(t, "antidote Abcdefgh antidote", "antidote",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
-    m.add(ScrollText(t, "uushi Abcdefgh uushi", "uushi",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
-    m.add(ScrollText(t, "lemon Abcdefgh lemon", "lemon",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
-    m.add(ScrollText(t, "ib8x8u Abcdefgh ib8x8u", "ib8x8u",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
-    m.add(ScrollText(t, "iv18x16u Abcdefgh iv18x16u", "iv18x16u",
-                     1, 75, (0, 255, 0), (0, 0, 25)))
+    scriptDir = os.path.dirname(os.path.realpath(__file__))
+    fontDir = os.path.join(scriptDir, "fonts")
+    for f in os.listdir(os.fsencode(fontDir)):
+        filename = os.fsdecode(f)
+        if not filename.endswith(".bdf"):
+            continue
+
+        fontName = filename[:-4]
+        s = fontName + " Abcdefgh " + fontName
+        m.add(ScrollText(t, s, fontName, 1, 75, (0, 255, 0), (0, 0, 25)))
 
     m.restart()
     t.loop(m.draw)

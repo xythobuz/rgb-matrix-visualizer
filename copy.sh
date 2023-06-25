@@ -8,6 +8,7 @@ cp util.py /pyboard
 cp manager.py /pyboard
 cp net.py /pyboard
 cp solid.py /pyboard
+cp splash.py /pyboard
 cp $1 /pyboard/main.py
 EOF
 else
@@ -19,6 +20,7 @@ cp util.py /pyboard
 cp manager.py /pyboard
 cp net.py /pyboard
 cp solid.py /pyboard
+cp splash.py /pyboard
 cp life.py /pyboard
 EOF
 fi
