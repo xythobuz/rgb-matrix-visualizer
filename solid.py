@@ -23,7 +23,8 @@ class Solid:
         self.start = time.time()
 
     def finished(self):
-        return (time.time() - self.start) >= self.time
+        now = time.time()
+        return ((now - self.start) >= self.time) or (now < self.start)
 
     def draw(self):
         for x in range(0, self.gui.width):
@@ -55,8 +56,9 @@ if __name__ == "__main__":
     def helper():
         global s, colors, ci, n, c
 
-        if (time.time() - s) >= 0.1:
-            s = time.time()
+        now = time.time()
+        if ((now - s) >= 0.1) or (now < s):
+            s = now
             n += 1
             if n >= 15:
                 ci = (ci + 1) % len(colors)

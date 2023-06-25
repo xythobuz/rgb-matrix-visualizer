@@ -122,13 +122,15 @@ class GameOfLife:
         self.lastDiff = diff
 
     def draw(self):
-        if (time.time() - self.last) > self.interval:
-            self.last = time.time()
+        now = time.time()
+        if (now - self.last) > self.interval:
+            self.last = now
             self.step()
 
         if (self.randomizeColors != None) and (self.randomizeColors != True):
-            if (time.time() - self.lastColor) > self.randomizeColors:
-                self.lastColor = time.time()
+            now = time.time()
+            if (now - self.lastColor) > self.randomizeColors:
+                self.lastColor = now
                 self.randomize()
 
         for x in range(0, self.gui.width):

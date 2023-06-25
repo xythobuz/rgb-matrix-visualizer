@@ -136,8 +136,9 @@ class Snake:
             # TODO "AI"
             pass
 
-        if (time.time() - self.last) >= self.timestep:
-            self.last = time.time()
+        now = time.time()
+        if (now - self.last) >= self.timestep:
+            self.last = now
 
             # only allow valid inputs
             tmp = self.direction + self.directionTmp

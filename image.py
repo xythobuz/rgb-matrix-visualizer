@@ -68,8 +68,9 @@ class ImageScreen:
 
     def draw(self):
         if self.image.is_animated:
-            if (time.time() - self.frame) >= self.time:
-                self.frame = time.time()
+            now = time.time()
+            if (now - self.frame) >= self.time:
+                self.frame = now
                 self.count = (self.count + 1) % self.image.n_frames
                 if self.count == 0:
                     self.done += 1

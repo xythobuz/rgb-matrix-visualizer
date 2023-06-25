@@ -9,6 +9,7 @@
 
 import time
 import util
+import sys
 
 class CheckHTTP:
     def __init__(self, u, r = 600.0):
@@ -16,6 +17,7 @@ class CheckHTTP:
         self.refresh = r
         self.successScreen = None
         self.failScreen = None
+        self.response = None
         self.get = util.getRequests()
 
         self.restart()
@@ -28,7 +30,12 @@ class CheckHTTP:
 
     def restart(self):
         self.start = time.time()
-        self.response = None
+
+        # when set to None here, manager will cause re-request every time
+        # we don't do it, caching the response for the full refresh time.
+        # this assumes the URL never changes, of course.
+        #self.response = None
+
         self.request()
 
         if self.successScreen != None:
@@ -40,12 +47,19 @@ class CheckHTTP:
         if self.get == None:
             return
 
-        if (self.response == None) or ((time.time() - self.start) >= self.refresh):
-            self.start = time.time()
+        now = time.time()
+        if (self.response == None) or ((now - self.start) >= self.refresh):
+            self.start = now
             try:
+                print("Refreshing " + self.url)
                 r = self.get(self.url)
+                r.close()
+                print("Response: " + str(r.status_code))
                 self.response = (r.status_code < 400)
-            except:
+            except Exception as e:
+                print()
+                sys.print_exception(e)
+                print()
                 self.response = False
 
     def finished(self):

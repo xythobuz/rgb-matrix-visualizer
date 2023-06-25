@@ -7,6 +7,17 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
+import util
+import time
+import sys
+
+useNTP = False
+try:
+    import ntptime
+    useNTP = True
+except:
+    pass
+
 # Does nothing. Take this as parent for new mappers.
 class MapperNull:
     def __init__(self, g):
@@ -16,6 +27,9 @@ class MapperNull:
         self.multiplier = self.gui.multiplier
         self.panelW = self.gui.panelW
         self.panelH = self.gui.panelH
+
+        if hasattr(self.gui, "matrix"):
+            self.matrix = self.gui.matrix
 
     def loop_start(self):
         return self.gui.loop_start()
@@ -68,4 +82,71 @@ class MapperStripToRect(MapperNull):
             x += self.width
             y -= self.panelH
 
+        self.gui.set_pixel(x, y, color)
+
+# Fetches current time via NTP.
+# System time will be in UTC afterwards, not with local time-zone
+# offset like when using rshell (eg. when using with a Pico).
+#
+# Brightness of display will be adjusted according to current time.
+# To avoid being too bright at night.
+#
+# When used with the Interstate75 Pico implementation,
+# this needs to be the "first" element of the mapper chain.
+# Otherwise special handling for PicoText will not work.
+class MapperReduceBrightness(MapperNull):
+    def __init__(self, g):
+        super().__init__(g)
+        self.last = None
+        self.connected = False
+        self.refresh = 60 * 60 * 6
+        self.factor = 1.0
+
+    def fetch(self):
+        self.factor = 1.0
+
+        if not useNTP:
+            return
+
+        if not self.connected:
+            self.connected = util.connectToWiFi()
+
+        if self.connected:
+            now = time.time()
+            if (self.last == None) or ((now - self.last) >= self.refresh) or (now < self.last):
+                self.last = now
+
+                try:
+                    print("Before sync： " + str(time.localtime()))
+                    ntptime.settime()
+                    print("After sync： "  + str(time.localtime()))
+                except Exception as e:
+                    print()
+                    sys.print_exception(e)
+                    print()
+                    return
+
+        # (year, month, day, hour, minute, second, ?, ?)
+        now = time.localtime()
+
+        # 8pm utc == 22pm dst germany
+        night = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
+
+        # 5am utc == 7am dst germany
+        morning = (now[0], now[1], now[2], 5, 0, 0, 0, 0)
+
+        if (now > morning) and (now < night):
+            self.factor = 1.0
+        else:
+            self.factor = 0.25
+
+    def adjust(self, color):
+        return (int(color[0] * self.factor), int(color[1] * self.factor), int(color[2] * self.factor))
+
+    def loop_end(self):
+        super().loop_end()
+        self.fetch()
+
+    def set_pixel(self, x, y, color):
+        color = self.adjust(color)
         self.gui.set_pixel(x, y, color)

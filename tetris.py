@@ -243,8 +243,9 @@ class Tetris:
             # TODO "AI"
             self.button = None
 
-        if (self.button != None) or ((time.time() - self.last) >= self.timestep):
-            self.last = time.time()
+        now = time.time()
+        if (self.button != None) or ((now - self.last) >= self.timestep) or (now < self.last):
+            self.last = now
             cont = self.step()
             if cont == False:
                 self.done = True

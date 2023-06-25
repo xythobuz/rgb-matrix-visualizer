@@ -7,7 +7,10 @@
 # think this stuff is worth it, you can buy me a beer in return.   Thomas Buck
 # ----------------------------------------------------------------------------
 
+import sys
+
 targetPlatform = None
+wifiConnected = False
 
 def isPi():
     global targetPlatform
@@ -43,17 +46,29 @@ def getTarget():
             # only print once
             print("Raspberry Pi Adafruit RGB LED Matrix detected")
         targetPlatform = "pi"
-    except:
+    except Exception as e:
+        print()
+        sys.print_exception(e)
+        print()
+
         try:
             # Next we try the Pico Interstate75 interface
             from pico import PicoMatrix
-            target = PicoMatrix()
+            pico = PicoMatrix()
+
+            # TODO hard-coded adjustments
+            from mapper import MapperReduceBrightness
+            target = MapperReduceBrightness(pico)
 
             if targetPlatform == None:
                 # only print once
                 print("Raspberry Pi Pico Interstate75 RGB LED Matrix detected")
             targetPlatform = "pico"
-        except:
+        except Exception as e:
+            print()
+            sys.print_exception(e)
+            print()
+
             # If this fails fall back to the SDL/pygame GUI
             from test import TestGUI
             target = TestGUI()
@@ -67,6 +82,21 @@ def getTarget():
 
 # https://github.com/raspberrypi/pico-examples/blob/master/pico_w/wifi/python_test_tcp/micropython_test_tcp_client.py
 def connectToWiFi():
+    global wifiConnected
+
+    if wifiConnected:
+        return True
+
+    # only use WiFi on Pico
+    try:
+        from pico import PicoMatrix
+    except Exception as e:
+        print()
+        sys.print_exception(e)
+        print()
+        wifiConnected = True
+        return True
+
     import network
     import time
     from config import Config
@@ -74,6 +104,7 @@ def connectToWiFi():
     # Check if wifi details have been set
     if len(Config.networks) == 0:
         print('Please set wifi ssid and password in config.py')
+        wifiConnected = False
         return False
 
     # Start WiFi hardware
@@ -92,14 +123,15 @@ def connectToWiFi():
                 break
     if (ssid == None) or (password == None):
         print("No known network found")
+        wifiConnected = False
         return False
 
     # Start connection
     wlan.connect(ssid, password)
 
     # Wait for connect success or failure
-    max_wait = 20
-    error_count = 20
+    max_wait = 40
+    error_count = max_wait
     while max_wait > 0:
         if wlan.status() >= 3:
             break
@@ -116,26 +148,35 @@ def connectToWiFi():
     # Handle connection error
     if wlan.status() != 3:
         print('wifi connection failed %d' % wlan.status())
+        wifiConnected = False
         return False
     else:
         print('connected')
         status = wlan.ifconfig()
         print('ip = ' + status[0])
 
+    wifiConnected = True
     return True
 
 def getRequests():
+    global wifiConnected
+
     try:
         # try to get normal python lib
         import requests
         return requests.get
-    except:
+    except Exception as e:
+        print()
+        sys.print_exception(e)
+        print()
+
         # if it fails try the Pi Pico MicroPython implementation
         import urequests as requests
 
         # in this case we also need to connect to WiFi first
-        if not connectToWiFi():
-            return None
+        if not wifiConnected:
+            if not connectToWiFi():
+                return None
 
         return requests.get
 
@@ -146,7 +187,11 @@ def getTextDrawer():
         # Try BDF parser library
         from bdf import DrawText
         return DrawText
-    except:
+    except Exception as e:
+        print()
+        sys.print_exception(e)
+        print()
+
         # fall back to the Pico Interstate75 implementation
         from pico import PicoText
         return PicoText

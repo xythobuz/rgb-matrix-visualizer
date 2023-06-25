@@ -41,8 +41,9 @@ class Manager:
                 self.screens[self.index][0].restart()
         else:
             # use given timeout
-            if (time.time() - self.lastTime) > self.screens[self.index][1]:
-                self.lastTime = time.time()
+            now = time.time()
+            if ((now - self.lastTime) > self.screens[self.index][1]) or (now < self.lastTime):
+                self.lastTime = now
                 self.index = (self.index + 1) % len(self.screens)
                 self.done = (self.index == 0)
                 self.screens[self.index][0].restart()

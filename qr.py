@@ -91,7 +91,11 @@ class QRScreen:
                     self.gui.set_pixel(x + self.xOff + self.image.width, y + self.yOff, self.c2)
 
         if self.heading != None:
-            self.text.text(self.heading, self.font, 0, True, -10)
+            off = -10
+            if self.font == "bitmap6":
+                off -= 3
+
+            self.text.text(self.heading, self.font, 0, True, off)
 
         for x in range(0, self.image.width):
             for y in range(0, self.image.height):
@@ -106,7 +110,7 @@ if __name__ == "__main__":
 
     t = util.getTarget()
 
-    d = QRScreen(t, "Hello World", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
+    d = QRScreen(t, "http://ubabot.frubar.net", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
 
     # dump generated QR image to console, for embedding in Pico script
     print("Dumping QR image to qr_tmp.txt")

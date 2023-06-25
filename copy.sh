@@ -6,6 +6,7 @@ cp config.py /pyboard
 cp pico.py /pyboard
 cp util.py /pyboard
 cp manager.py /pyboard
+cp mapper.py /pyboard
 cp net.py /pyboard
 cp solid.py /pyboard
 cp splash.py /pyboard
@@ -22,6 +23,7 @@ cp config.py /pyboard
 cp pico.py /pyboard
 cp util.py /pyboard
 cp manager.py /pyboard
+cp mapper.py /pyboard
 cp net.py /pyboard
 cp solid.py /pyboard
 cp splash.py /pyboard

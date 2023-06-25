@@ -11,6 +11,9 @@
 # ----------------------------------------------------------------------------
 
 import interstate75
+from mapper import MapperReduceBrightness
+import time
+from machine import Pin
 
 class PicoMatrix:
     def __init__(self, w = 32, h = 32):
@@ -26,10 +29,14 @@ class PicoMatrix:
         if (w != 32) or (h != 32):
             raise RuntimeError("TODO not yet supported")
 
-        self.matrix = interstate75.Interstate75(display = interstate75.DISPLAY_INTERSTATE75_32X32)
+        mode = interstate75.DISPLAY_INTERSTATE75_32X32
+        self.matrix = interstate75.Interstate75(display = mode)
 
         self.black = self.matrix.display.create_pen(0, 0, 0)
         self.white = self.matrix.display.create_pen(255, 255, 255)
+
+        self.ledTime = time.time()
+        self.led = Pin("LED", Pin.OUT)
 
         self.loop_start() # initialize with blank image for ScrollText constructor
 
@@ -47,9 +54,17 @@ class PicoMatrix:
         while True:
             if self.loop_start():
                 break
+
             if func != None:
                 func()
+
             self.loop_end()
+
+            now = time.time()
+            if ((now - self.ledTime) >= 0.5) or (now < self.ledTime):
+                self.ledTime = now
+                self.led.toggle()
+
         self.matrix.stop()
 
     def set_pixel(self, x, y, color):
@@ -72,7 +87,11 @@ class PicoText:
         if not earlyAbort:
             return self.gui.matrix.display.measure_text(s, scale=1)
 
-        pen = self.gui.matrix.display.create_pen(self.fg[0], self.fg[1], self.fg[2])
+        color = self.fg
+        if isinstance(self.gui, MapperReduceBrightness):
+            color = self.gui.adjust(color)
+
+        pen = self.gui.matrix.display.create_pen(color[0], color[1], color[2])
         self.gui.matrix.display.set_pen(pen)
 
         self.gui.matrix.display.set_font(f)
@@ -107,8 +126,9 @@ if __name__ == "__main__":
     def helper():
         global s, start, i
 
-        if (time.time() - start) > 2.0:
-            start = time.time()
+        now = time.time()
+        if ((now - start) > 2.0) or (now < start):
+            start = now
             i = (i + 1) % 2
 
         if i == 0:

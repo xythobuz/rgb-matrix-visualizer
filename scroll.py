@@ -33,7 +33,6 @@ class ScrollText:
         self.text = t
         self.font = f
         self.width = self.drawer.text(self.text, self.font, 0, False)
-        print(self.text, self.font, self.width)
 
     def restart(self):
         self.offset = -self.gui.width
@@ -44,11 +43,11 @@ class ScrollText:
         return (self.count >= self.iterations)
 
     def draw(self):
-        if (time.time() - self.last) > self.speed:
-            off = (time.time() - self.last) / self.speed
-            print(self.offset, "->", self.offset + int(off))
+        now = time.time()
+        if (now - self.last) > self.speed:
+            off = (now - self.last) / self.speed
             self.offset += int(off)
-            self.last = time.time()
+            self.last = now
             if self.offset >= self.width:
                 self.offset = -self.gui.width
                 self.count += 1
