@@ -11,9 +11,10 @@
 # ----------------------------------------------------------------------------
 
 import interstate75
+import hub75
 from mapper import MapperReduceBrightness
 import time
-from machine import Pin, mem32
+from machine import Pin
 
 class PicoMatrix:
     def __init__(self, w = 32, h = 32):
@@ -30,25 +31,13 @@ class PicoMatrix:
             raise RuntimeError("TODO not yet supported")
 
         mode = interstate75.DISPLAY_INTERSTATE75_32X32
-        self.matrix = interstate75.Interstate75(display = mode)
+        self.matrix = interstate75.Interstate75(display = mode, panel_type = hub75.PANEL_FM6126A)
 
         self.black = self.matrix.display.create_pen(0, 0, 0)
         self.white = self.matrix.display.create_pen(255, 255, 255)
 
         self.ledTime = time.time()
         self.led = Pin("LED", Pin.OUT)
-
-        # For all matrix pins r0, g0, b0, r1, g1, b1, a, b, c, d, e:
-        # reduce drive-strength to minimum 2mA and set slew to slow.
-        # Attempt to reduce ghosting on display. Not really helping :(
-        io_base = 0x4001c000
-        io_off = 0x04
-        io_inc = 0x04
-        for p in range(0, 11):
-            reg = io_base + (p * io_inc) + io_off
-            val = mem32[reg]
-            val = val & 0xFFFFFFCE
-            mem32[reg] = val
 
         self.loop_start() # initialize with blank image for ScrollText constructor
 
