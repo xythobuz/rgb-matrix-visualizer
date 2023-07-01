@@ -48,7 +48,10 @@ def getTarget():
         targetPlatform = "pi"
     except Exception as e:
         print()
-        sys.print_exception(e)
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
         print()
 
         try:
@@ -66,7 +69,10 @@ def getTarget():
             targetPlatform = "pico"
         except Exception as e:
             print()
-            sys.print_exception(e)
+            if hasattr(sys, "print_exception"):
+                sys.print_exception(e)
+            else:
+                print(e)
             print()
 
             # If this fails fall back to the SDL/pygame GUI
@@ -92,8 +98,12 @@ def connectToWiFi():
         from pico import PicoMatrix
     except Exception as e:
         print()
-        sys.print_exception(e)
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
         print()
+
         wifiConnected = True
         return True
 
@@ -167,7 +177,10 @@ def getRequests():
         return requests.get
     except Exception as e:
         print()
-        sys.print_exception(e)
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
         print()
 
         # if it fails try the Pi Pico MicroPython implementation
@@ -189,7 +202,10 @@ def getTextDrawer():
         return DrawText
     except Exception as e:
         print()
-        sys.print_exception(e)
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
         print()
 
         # fall back to the Pico Interstate75 implementation

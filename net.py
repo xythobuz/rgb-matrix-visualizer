@@ -58,8 +58,12 @@ class CheckHTTP:
                 self.response = (r.status_code < 400)
             except Exception as e:
                 print()
-                sys.print_exception(e)
+                if hasattr(sys, "print_exception"):
+                    sys.print_exception(e)
+                else:
+                    print(e)
                 print()
+
                 self.response = False
 
     def finished(self):

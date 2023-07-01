@@ -122,8 +122,12 @@ class MapperReduceBrightness(MapperNull):
                     print("After sync： "  + str(time.localtime()))
                 except Exception as e:
                     print()
-                    sys.print_exception(e)
+                    if hasattr(sys, "print_exception"):
+                        sys.print_exception(e)
+                    else:
+                        print(e)
                     print()
+
                     return
 
         # (year, month, day, hour, minute, second, ?, ?)
