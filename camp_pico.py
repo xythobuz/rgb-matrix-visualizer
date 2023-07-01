@@ -22,6 +22,7 @@ if True:#__name__ == "__main__":
     from scroll import ScrollText
     from splash import SplashScreen
     from manager import Manager
+    from pico import PicoBatt
 
     url = "http://ubabot.frubar.net"
 
@@ -63,6 +64,8 @@ if True:#__name__ == "__main__":
     m.add(QRScreen(t, img_data, 15.0))
     m.add(Solid(t, 1.0))
     m.add(d) # HTTP Check, either "success" or "fail"
+    m.add(Solid(t, 1.0))
+    m.add(PicoBatt(t, 5.0, 5.0))
     m.add(Solid(t, 1.0))
 
     m.restart()

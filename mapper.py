@@ -31,6 +31,9 @@ class MapperNull:
         if hasattr(self.gui, "matrix"):
             self.matrix = self.gui.matrix
 
+    def batteryCache(self, refresh = False):
+        return self.gui.batteryCache(refresh)
+
     def loop_start(self):
         return self.gui.loop_start()
 
