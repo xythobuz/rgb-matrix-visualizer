@@ -113,8 +113,8 @@ if __name__ == "__main__":
     d = QRScreen(t, "http://ubabot.frubar.net", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
 
     # dump generated QR image to console, for embedding in Pico script
-    print("Dumping QR image to qr_tmp.txt")
-    with open("qr_tmp.txt", "w") as f:
+    print("Dumping QR image to qr_tmp.py")
+    with open("qr_tmp.py", "w") as f:
         f.write("# QR code image for \"" + d.data + "\"" + os.linesep)
         f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
         f.write("qr_data = [" + os.linesep)

@@ -14,6 +14,8 @@ cp life.py /pyboard
 cp qr.py /pyboard
 cp camp_pico.py /pyboard
 cp scroll.py /pyboard
+cp qr_tmp.py /pyboard
+cp img_tmp.py /pyboard
 cp $1 /pyboard/main.py
 EOF
 else
@@ -31,5 +33,7 @@ cp life.py /pyboard
 cp qr.py /pyboard
 cp camp_pico.py /pyboard
 cp scroll.py /pyboard
+cp qr_tmp.py /pyboard
+cp img_tmp.py /pyboard
 EOF
 fi

@@ -107,7 +107,28 @@ if __name__ == "__main__":
     imageDir = os.path.join(scriptDir, "images")
     for f in os.listdir(os.fsencode(imageDir)):
         filename = os.fsdecode(f)
-        m.add(ImageScreen(t, filename))
+
+        d = ImageScreen(t, filename)
+        m.add(d)
+
+        if filename != "Favicon.png":
+            continue
+
+        # dump generated image to console, for embedding in Pico script
+        print()
+        print("Dumping image to img_tmp.py")
+        with open("img_tmp.py", "w") as f:
+            f.write("# Image \"" + filename + "\"" + os.linesep)
+            f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
+            f.write("img_data = [" + os.linesep)
+            for y in range(0, d.image.height):
+                f.write("    [" + os.linesep)
+                for x in range(0, d.image.width):
+                    s = str(d.image.getpixel((x, y)))
+                    f.write("        " + s + "," + os.linesep)
+                f.write("    ]," + os.linesep)
+            f.write("]" + os.linesep)
+        print()
 
     m.restart()
     t.loop(m.draw)
