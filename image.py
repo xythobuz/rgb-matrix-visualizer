@@ -13,10 +13,19 @@
 from PIL import Image
 import time
 import os
-import util
+
+# GIF images contain Palletes for each frame.
+# These can be different between frames.
+# So the library is converting them to RGB.
+# This means we can not replace the background easily
+# for all but the first frame in animations.
+# This setting changes that to keep the same palette, as long as possible.
+# This works with some GIFs, but not all of them.
+from PIL import GifImagePlugin
+GifImagePlugin.LOADING_STRATEGY = GifImagePlugin.LoadingStrategy.RGB_AFTER_DIFFERENT_PALETTE_ONLY
 
 class ImageScreen:
-    def __init__(self, g, p, t = 0.2, i = 1, to = 10.0, bg = None):
+    def __init__(self, g, p, t = 0.2, i = 1, to = 5.0, bg = None):
         self.gui = g
         self.time = t
         self.iterations = i
@@ -39,14 +48,14 @@ class ImageScreen:
 
             # keep the aspect ratio and fit within visible area
             ratio = self.image.width / self.image.height
-            width = self.gui.width
-            height = self.gui.height
-            if width < height:
-                width = self.gui.width
-                height = int(width / ratio)
-            else:
+            max_width = int(ratio * self.gui.height)
+            max_height = int(self.gui.width / ratio)
+            if (max_height >= self.gui.height) or (((self.gui.width - max_width) < (self.gui.height - max_height)) and ((self.gui.width - max_width) >= 0)):
+                width = max_width
                 height = self.gui.height
-                width = int(ratio * height)
+            else:
+                width = self.gui.width
+                height = max_height
 
             # resize
             self.image = self.image.resize((width, height),
@@ -73,7 +82,12 @@ class ImageScreen:
     def finished(self):
         if self.done >= self.iterations:
             return True
-        return (time.time() - self.start) >= self.timeout
+
+        # only apply timeout for static images
+        if self.image.is_animated:
+            return False
+        else:
+            return (time.time() - self.start) >= self.timeout
 
     def draw(self):
         if self.image.is_animated:
@@ -106,6 +120,8 @@ class ImageScreen:
                     self.gui.set_pixel(x + self.xOff, y + self.yOff, v)
 
 if __name__ == "__main__":
+    import sys
+
     import util
     t = util.getTarget()
 
@@ -123,21 +139,29 @@ if __name__ == "__main__":
         if filename != "Favicon.png":
             continue
 
-        # dump generated image to console, for embedding in Pico script
-        print()
-        print("Dumping image to img_tmp.py")
-        with open("img_tmp.py", "w") as f:
-            f.write("# Image \"" + filename + "\"" + os.linesep)
-            f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
-            f.write("img_data = [" + os.linesep)
-            for y in range(0, d.image.height):
-                f.write("    [" + os.linesep)
-                for x in range(0, d.image.width):
-                    s = str(d.image.getpixel((x, y)))
-                    f.write("        " + s + "," + os.linesep)
-                f.write("    ]," + os.linesep)
-            f.write("]" + os.linesep)
-        print()
+        try:
+            # dump generated image to console, for embedding in Pico script
+            print()
+            print("Dumping image to img_tmp.py")
+            with open("img_tmp.py", "w") as f:
+                f.write("# Image \"" + filename + "\"" + os.linesep)
+                f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
+                f.write("img_data = [" + os.linesep)
+                for y in range(0, d.image.height):
+                    f.write("    [" + os.linesep)
+                    for x in range(0, d.image.width):
+                        s = str(d.image.getpixel((x, y)))
+                        f.write("        " + s + "," + os.linesep)
+                    f.write("    ]," + os.linesep)
+                f.write("]" + os.linesep)
+            print()
+        except Exception as e:
+            print()
+            if hasattr(sys, "print_exception"):
+                sys.print_exception(e)
+            else:
+                print(e)
+                print()
 
     m.restart()
     t.loop(m.draw)

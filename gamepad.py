@@ -83,9 +83,9 @@ class InputWrapper:
                         self.keys["x"] = v
                     elif (event.code == ecodes.KEY_ENTER) or (event.code == ecodes.BTN_Y) or (event.code == ecodes.BTN_TOP):
                         self.keys["y"] = v
-                    elif event.code == ecodes.BTN_PINKIE:
+                    elif (event.code == ecodes.BTN_PINKIE) or (event.code == ecodes.KEY_D):
                         self.keys["r"] = v
-                    elif event.code == ecodes.BTN_TOP2:
+                    elif (event.code == ecodes.BTN_TOP2) or (event.code == ecodes.KEY_A):
                         self.keys["l"] = v
                     elif event.code == ecodes.BTN_BASE4:
                         self.keys["start"] = v

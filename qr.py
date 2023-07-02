@@ -107,23 +107,32 @@ class QRScreen:
 if __name__ == "__main__":
     import util
     import os
+    import sys
 
     t = util.getTarget()
 
     d = QRScreen(t, "http://ubabot.frubar.net", 10.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0))
 
-    # dump generated QR image to console, for embedding in Pico script
-    print("Dumping QR image to qr_tmp.py")
-    with open("qr_tmp.py", "w") as f:
-        f.write("# QR code image for \"" + d.data + "\"" + os.linesep)
-        f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
-        f.write("qr_data = [" + os.linesep)
-        for y in range(0, d.image.height):
-            f.write("    [" + os.linesep)
-            for x in range(0, d.image.width):
-                s = str(d.image.getpixel((x, y)))
-                f.write("        " + s + "," + os.linesep)
-            f.write("    ]," + os.linesep)
-        f.write("]" + os.linesep)
+    try:
+        # dump generated QR image to console, for embedding in Pico script
+        print("Dumping QR image to qr_tmp.py")
+        with open("qr_tmp.py", "w") as f:
+            f.write("# QR code image for \"" + d.data + "\"" + os.linesep)
+            f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
+            f.write("qr_data = [" + os.linesep)
+            for y in range(0, d.image.height):
+                f.write("    [" + os.linesep)
+                for x in range(0, d.image.width):
+                    s = str(d.image.getpixel((x, y)))
+                    f.write("        " + s + "," + os.linesep)
+                f.write("    ]," + os.linesep)
+            f.write("]" + os.linesep)
+    except Exception as e:
+        print()
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
+            print()
 
     t.loop(d.draw)

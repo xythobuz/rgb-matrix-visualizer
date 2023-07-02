@@ -22,7 +22,8 @@ from gamepad import InputWrapper
 from manager import Manager
 import util
 
-url = "http://ubabot.frubar.net"
+#url = "http://ubabot.frubar.net"
+url = "http://www.xythobuz.de"
 
 # Need to import InputWrapper before initializing RGB Matrix on Pi
 i = InputWrapper()
@@ -38,7 +39,7 @@ t.loop_end()
 
 # UbaBot is online
 success = Manager(t)
-success.add(ImageScreen(t, "drinka.gif", 0.2, 2, 20.0))
+success.add(ImageScreen(t, "drinka.gif", 0.2, 2, 20.0, (0, 0, 0)))
 success.add(Solid(t, 1.0))
 success.add(QRScreen(t, url, 30.0, "Drinks:", "tom-thumb", (255, 255, 255), (0, 0, 0)))
 success.add(Solid(t, 1.0))
@@ -46,6 +47,7 @@ success.add(Solid(t, 1.0))
 # UbaBot is offline
 fail = Manager(t)
 fail.add(ImageScreen(t, "attention.gif", 0.2, 2, 20.0, (0, 0, 0)))
+fail.add(Solid(t, 1.0))
 fail.add(ScrollText(t, "The UbaBot Cocktail machine is currently closed. Please come back later for more drinks!", "lemon", 2, 75, camp_pink))
 fail.add(Solid(t, 1.0))
 fail.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
@@ -57,7 +59,7 @@ d.success(success)
 d.fail(fail)
 
 # Main "Menu"
-m = Manager(t)
+m = Manager(t, i)
 m.add(ScrollText(t, "#CCCAMP23", "lemon", 1, 75, camp_green))
 m.add(Solid(t, 1.0))
 m.add(ImageScreen(t, "Favicon.png", 0, 1, 10.0))

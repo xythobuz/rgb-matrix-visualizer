@@ -28,6 +28,26 @@ class CheckHTTP:
     def fail(self, f):
         self.failScreen = f
 
+    # Compatibility to Manager button events
+    def child_count(self, i):
+        self.request()
+        if self.response:
+            if hasattr(self.successScreen, "child_count"):
+                return self.successScreen.child_count(i)
+        else:
+            if hasattr(self.failScreen, "child_count"):
+                return self.failScreen.child_count(i)
+
+    # Compatibility to Manager button events
+    def switch_to(self, i, update_flag):
+        self.request()
+        if self.response:
+            if hasattr(self.successScreen, "switch_to"):
+                self.successScreen.switch_to(i, update_flag)
+        else:
+            if hasattr(self.failScreen, "switch_to"):
+                self.failScreen.switch_to(i, update_flag)
+
     def restart(self):
         self.start = time.time()
 

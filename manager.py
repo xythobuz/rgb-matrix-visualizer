@@ -10,8 +10,10 @@
 import time
 
 class Manager:
-    def __init__(self, g):
+    def __init__(self, g, i = None, ss = 2):
         self.gui = g
+        self.input = i
+        self.step_size = ss
         self.screens = []
         self.restart()
 
@@ -19,6 +21,13 @@ class Manager:
         self.index = 0
         self.done = False
         self.lastTime = time.time()
+        self.old_keys = {
+            "l": False,
+            "r": False,
+        }
+
+        #print("Manager ", len(self.screens), " reset to ", self.index)
+
         if len(self.screens) > 0:
             self.screens[0][0].restart()
 
@@ -29,24 +38,64 @@ class Manager:
         v = (s, d)
         self.screens.append(v)
 
+    def buttons(self):
+        keys = self.input.get()
+
+        if keys["l"] and (not self.old_keys["l"]):
+            c = self.screens[self.index][0]
+            if hasattr(c, "switch_to") and hasattr(c, "child_count"):
+                if c.child_count(-1):
+                    self.switch_to(-1, False)
+                else:
+                    c.switch_to(-1, False)
+            else:
+                self.switch_to(-1, False)
+        elif keys["r"] and (not self.old_keys["r"]):
+            c = self.screens[self.index][0]
+            if hasattr(c, "switch_to") and hasattr(c, "child_count"):
+                if c.child_count(1):
+                    self.switch_to(1, False)
+                else:
+                    c.switch_to(1, False)
+            else:
+                self.switch_to(1, False)
+
+        self.old_keys = keys.copy()
+
+    def child_count(self, i):
+        if i > 0:
+            index = int(self.index / self.step_size)
+            l = int(len(self.screens) / self.step_size)
+            return index >= (l - 1)
+        else:
+            return self.index <= 0
+
+    def switch_to(self, i, update_flag):
+        self.lastTime = time.time()
+        self.index = int((int(self.index / self.step_size) + i) * self.step_size) % len(self.screens)
+
+        #print("Manager ", len(self.screens), " switch to ", self.index, update_flag)
+
+        if update_flag:
+            self.done = (self.index == 0)
+
+        self.screens[self.index][0].restart()
+
     def draw(self):
+        if self.input != None:
+            self.buttons()
+
         self.screens[self.index][0].draw()
 
         if self.screens[self.index][1] == None:
             # let screen decide when it is done
             if self.screens[self.index][0].finished():
-                self.lastTime = time.time()
-                self.index = (self.index + 1) % len(self.screens)
-                self.done = (self.index == 0)
-                self.screens[self.index][0].restart()
+                self.switch_to(1, True)
         else:
             # use given timeout
             now = time.time()
             if ((now - self.lastTime) > self.screens[self.index][1]) or (now < self.lastTime):
-                self.lastTime = now
-                self.index = (self.index + 1) % len(self.screens)
-                self.done = (self.index == 0)
-                self.screens[self.index][0].restart()
+                self.switch_to(1, True)
 
 if __name__ == "__main__":
     from splash import SplashScreen
