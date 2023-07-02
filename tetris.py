@@ -12,11 +12,16 @@ import time
 import random
 
 class Tetris:
-    def __init__(self, g, i, ts = 0.5, to = 60.0):
+    def __init__(self, g, i, ts = 0.5, to = 60.0, w = 10, h = 22):
         self.gui = g
         self.input = i
         self.timestep = ts
         self.timeout = to
+        self.width = min(w, self.gui.width)
+        self.height = min(h, self.gui.height)
+
+        self.x_off = int((self.gui.panelW - self.width - 2) / 2)
+        self.y_off = int((self.gui.panelH - self.height - 2) / 2)
 
         self.endText = ScrollText(self.gui, "Game Over!", "uushi",
                                    2, 75, (251, 72, 196))
@@ -94,8 +99,14 @@ class Tetris:
         self.button = None
         self.score = 0
         self.done = False
-        self.data = [[self.bg for y in range(self.gui.height)] for x in range(self.gui.width)]
+        self.data = [[self.bg for y in range(self.height)] for x in range(self.width)]
         self.piece = None
+        self.old_keys = {
+            "left": False,
+            "right": False,
+            "up": False,
+            "down": False,
+        }
 
     def finished(self):
         if self.input == None:
@@ -109,9 +120,6 @@ class Tetris:
 
         return False
 
-    # TODO collision detection is broken
-    # TODO not working for pixels outside of vertical center line???
-    # TODO something like that...
     def collision(self):
         # check for collision of piece with data
         pos = (self.piece[2], self.piece[3])
@@ -122,7 +130,11 @@ class Tetris:
                     continue
 
                 # check for collision with bottom wall
-                if (y + pos[1]) >= self.gui.height:
+                if (y + pos[1]) >= self.height:
+                    return True
+
+                # check for collision with right wall
+                if (x + pos[0]) >= self.width:
                     return True
 
                 # check for collision with previous pieces
@@ -142,14 +154,48 @@ class Tetris:
 
         for y in range(0, len(piece)):
             for x in range(0, len(piece[y])):
-                remove = False
+                # only set or clear where piece actually is
                 if piece[y][x] == 0:
-                    remove = True
+                    continue
 
-                if clear or remove:
+                if clear:
                     self.data[x + position[0]][y + position[1]] = self.bg
                 else:
                     self.data[x + position[0]][y + position[1]] = self.piece[1]
+
+    def checkWin(self):
+        had_data = False
+        for y in range(0, self.height):
+            line_full = True
+            for x in range(0, self.width):
+                if self.data[x][y] == self.bg:
+                    line_full = False
+                else:
+                    had_data = True
+
+            if had_data and line_full:
+                self.score += 1
+
+                # move stuff above into this line
+                for y2 in reversed(range(1, y + 1)):
+                    for x in range(0, self.width):
+                        self.data[x][y2] = self.data[x][y2 - 1]
+
+                # clear out top line
+                for x in range(0, self.width):
+                    self.data[x][0] = self.bg
+
+        # check for complete win
+        board_clear = (self.piece == None)
+        for y in range(0, self.height):
+            for x in range(0, self.width):
+                if self.data[x][y] != self.bg:
+                    board_clear = False
+                if board_clear == False:
+                    break
+            if board_clear == False:
+                break
+        return board_clear
 
     def step(self):
         if self.piece == None:
@@ -164,7 +210,7 @@ class Tetris:
             ]
 
             # center the piece on top of the playing board
-            self.piece[2] = int((self.gui.width - len(self.piece[0][0])) / 2)
+            self.piece[2] = int((self.width - len(self.piece[0][0])) / 2)
 
             if self.collision():
                 # new piece immediately collided. game over!
@@ -188,7 +234,7 @@ class Tetris:
             if self.piece[2] > 0:
                 self.piece[2] -= 1
         elif self.button == "r":
-            if self.piece[2] < (self.gui.width - 1):
+            if self.piece[2] < (self.width - 1):
                 self.piece[2] += 1
         else:
             # one pixel down
@@ -205,9 +251,13 @@ class Tetris:
             self.piece[2] = oldPosition[0]
             self.piece[3] = oldPosition[1]
 
-            if (self.button != "l") and (self.button != "r"):
+            if (self.button != "l") and (self.button != "r") and (self.button != "u"):
                 # but only stop playing it if it was moving down
                 self.piece = None
+
+                # check for cleared line
+                if self.checkWin():
+                    return False
         else:
             # copy piece at new location into buffer
             self.put(False)
@@ -219,14 +269,19 @@ class Tetris:
 
     def buttons(self):
         keys = self.input.get()
-        if keys["left"]:
+
+        if keys["left"] and (not self.old_keys["left"]):
             self.button = "l"
-        elif keys["right"]:
+        elif keys["right"] and (not self.old_keys["right"]):
             self.button = "r"
-        elif keys["up"]:
+        elif keys["up"] and (not self.old_keys["up"]):
             self.button = "u"
         elif keys["down"]:
             self.button = "d"
+        elif (keys["select"] and keys["start"] and (not self.old_keys["start"])) or (keys["start"] and keys["select"] and (not self.old_keys["select"])):
+            self.restart()
+
+        self.old_keys = keys.copy()
 
     def draw(self):
         if self.done:
@@ -245,23 +300,32 @@ class Tetris:
 
         now = time.time()
         if (self.button != None) or ((now - self.last) >= self.timestep) or (now < self.last):
-            self.last = now
+            # don't let user stop falling pieces by moving/rotating endlessly
+            if (self.button != "l") and (self.button != "r") and (self.button != "u"):
+                self.last = now
+
             cont = self.step()
             if cont == False:
                 self.done = True
                 self.scoreText.setText("Score: " + str(self.score), "uushi")
                 self.endText.restart()
 
-        for x in range(0, self.gui.width):
-            for y in range(0, self.gui.height):
-                self.gui.set_pixel(x, y, self.data[x][y])
+        # TODO placement of play area
+        for x in range(-1, self.width + 1):
+            for y in range(-1, self.height + 1):
+                c = (255, 255, 255)
+                if (x >= 0) and (y >= 0) and (x < self.width) and (y < self.height):
+                    c = self.data[x][y]
+
+                self.gui.set_pixel(x + 1 + self.x_off, y + 1 + self.y_off, c)
 
 if __name__ == "__main__":
-    import util
-    t = util.getTarget()
-
+    # Need to import InputWrapper before initializing RGB Matrix on Pi
     from gamepad import InputWrapper
     i = InputWrapper()
 
-    d = Tetris(t, i, 0.1)
+    import util
+    t = util.getTarget()
+
+    d = Tetris(t, i)
     t.loop(d.draw)

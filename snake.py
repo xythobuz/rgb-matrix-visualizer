@@ -41,6 +41,13 @@ class Snake:
         self.player = [ (int(self.gui.width / 2), int(self.gui.height / 2)) ]
         self.data[self.player[0][0]][self.player[0][1]] = 1
 
+        self.old_keys = {
+            "left": False,
+            "right": False,
+            "up": False,
+            "down": False,
+        }
+
         self.placeDot()
 
     def finished(self):
@@ -63,14 +70,19 @@ class Snake:
 
     def buttons(self):
         keys = self.input.get()
-        if keys["left"]:
+
+        if keys["left"] and (not self.old_keys["left"]):
             self.directionTmp = "l"
-        elif keys["right"]:
+        elif keys["right"] and (not self.old_keys["right"]):
             self.directionTmp = "r"
-        elif keys["up"]:
+        elif keys["up"] and (not self.old_keys["up"]):
             self.directionTmp = "u"
-        elif keys["down"]:
+        elif keys["down"] and (not self.old_keys["down"]):
             self.directionTmp = "d"
+        elif (keys["select"] and keys["start"] and (not self.old_keys["start"])) or (keys["start"] and keys["select"] and (not self.old_keys["select"])):
+            self.restart()
+
+        self.old_keys = keys.copy()
 
     def step(self):
         player = self.player[len(self.player) - 1]
@@ -122,6 +134,12 @@ class Snake:
         self.scoreText.draw()
 
     def draw(self):
+        if self.input != None:
+            self.buttons()
+        else:
+            # TODO "AI"
+            pass
+
         if self.direction == "":
             if self.finishedEndScreen():
                 self.drawScoreScreen()
@@ -129,12 +147,6 @@ class Snake:
                 self.drawEndScreen()
                 self.scoreText.restart()
             return
-
-        if self.input != None:
-            self.buttons()
-        else:
-            # TODO "AI"
-            pass
 
         now = time.time()
         if (now - self.last) >= self.timestep:
@@ -158,11 +170,12 @@ class Snake:
                 self.gui.set_pixel(x, y, self.colors[self.data[x][y]])
 
 if __name__ == "__main__":
-    import util
-    t = util.getTarget()
-
+    # Need to import InputWrapper before initializing RGB Matrix on Pi
     from gamepad import InputWrapper
     i = InputWrapper()
+
+    import util
+    t = util.getTarget()
 
     d = Snake(t, i)
     t.loop(d.draw)

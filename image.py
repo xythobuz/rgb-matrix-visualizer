@@ -34,14 +34,23 @@ class ImageScreen:
 
         # automatically crop and scale large images
         if not self.image.is_animated and ((self.image.width > self.gui.width) or (self.image.height > self.gui.height)):
+            # crop to visible area
             self.image = self.image.crop(self.image.getbbox())
 
-            if util.isPi():
-                # TODO PIL version is too old on Pi
-                self.image = self.image.resize((self.gui.width, self.gui.height))
+            # keep the aspect ratio and fit within visible area
+            ratio = self.image.width / self.image.height
+            width = self.gui.width
+            height = self.gui.height
+            if width < height:
+                width = self.gui.width
+                height = int(width / ratio)
             else:
-                self.image = self.image.resize((self.gui.width, self.gui.height),
-                                            Image.Resampling.NEAREST)
+                height = self.gui.height
+                width = int(ratio * height)
+
+            # resize
+            self.image = self.image.resize((width, height),
+                                           Image.Resampling.NEAREST)
 
             # new image object is also missing these
             self.image.is_animated = False

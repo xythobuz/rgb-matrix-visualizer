@@ -9,6 +9,7 @@
 
 import sys
 
+cachedTarget = None
 targetPlatform = None
 wifiConnected = False
 
@@ -29,7 +30,10 @@ def isPico():
     return targetPlatform == "pico"
 
 def getTarget():
-    global targetPlatform
+    global targetPlatform, cachedTarget
+
+    if cachedTarget != None:
+        return cachedTarget
 
     target = None
     try:
@@ -40,13 +44,16 @@ def getTarget():
         # TODO hard-coded adjustments
         from mapper import MapperColorAdjust, MapperStripToRect
         col = MapperColorAdjust(pi)
-        target = MapperStripToRect(col)
+        #target = MapperStripToRect(col)
+        target = col
 
         if targetPlatform == None:
             # only print once
             print("Raspberry Pi Adafruit RGB LED Matrix detected")
         targetPlatform = "pi"
     except Exception as e:
+        target = None
+
         print()
         if hasattr(sys, "print_exception"):
             sys.print_exception(e)
@@ -68,6 +75,8 @@ def getTarget():
                 print("Raspberry Pi Pico Interstate75 RGB LED Matrix detected")
             targetPlatform = "pico"
         except Exception as e:
+            target = None
+
             print()
             if hasattr(sys, "print_exception"):
                 sys.print_exception(e)
@@ -84,6 +93,7 @@ def getTarget():
                 print("Falling back to GUI debug interface")
             targetPlatform = "tk"
 
+    cachedTarget = target
     return target
 
 # https://github.com/raspberrypi/pico-examples/blob/master/pico_w/wifi/python_test_tcp/micropython_test_tcp_client.py

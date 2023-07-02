@@ -52,11 +52,11 @@ class MapperNull:
 # on hard-corded coordinate ranges.
 class MapperColorAdjust(MapperNull):
     def set_pixel(self, x, y, color):
-        # third panel from the left, with 64 <= x < 96,
+        # second panel from the left, with 32 <= x,
         # is "old" type with brighter LEDs.
-        # rest of panels to the left and right are less bright.
-        # so adjust brightness of inner panel rg channels down.
-        if (x >= (self.gui.panelW * 2)) and (x < (self.gui.panelW * 3)):
+        # rest of panels to the left are less bright.
+        # so adjust brightness of other panel rg channels down.
+        if x >= self.gui.panelW:
             color = (int(color[0] * 0.75), int(color[1] * 0.75), color[2])
 
         self.gui.set_pixel(x, y, color)

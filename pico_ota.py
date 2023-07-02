@@ -19,7 +19,7 @@ import os
 # to check if we're actually running on MicroPython
 on_pico = False
 try:
-    import uos
+    import machine
     on_pico = True
 except Exception as e:
     print()
@@ -37,10 +37,15 @@ class PicoOTA:
 
         self.get = None
         self.update_path = "."
+        self.exe_path = ""
+        self.version_file = "ota_version"
         self.blacklist = []
 
     def path(self, p):
         self.update_path = p
+
+    def exe(self, e):
+        self.exe_path = e
 
     def ignore(self, path):
         if not path in self.blacklist:
@@ -67,6 +72,32 @@ class PicoOTA:
             print()
             return None
 
+    def get_stored_commit(self):
+        current = "unknown"
+        try:
+            f = open(os.path.join(self.update_path, self.version_file), "r")
+            current = f.readline().strip()
+            f.close()
+        except Exception as e:
+            print()
+            if hasattr(sys, "print_exception"):
+                sys.print_exception(e)
+            else:
+                print(e)
+            print()
+        return current
+
+    def get_previous_commit(self, commit):
+        r = self.fetch(self.host + "/" + self.repo + "/commit/" + commit).text
+        for line in r.splitlines():
+            if not (self.repo + "/commit/") in line:
+                continue
+
+            line = line[line.find("/commit/") : ][8 : ][ : 40]
+            if line != commit:
+                return line
+        return "unknown"
+
     def check(self, verbose = False):
         if self.branch == None:
             # get default branch
@@ -83,18 +114,7 @@ class PicoOTA:
         if verbose:
             print("Latest commit is " + commit)
 
-        current = ""
-        try:
-            f = open(os.path.join(self.update_path, "ota_version"), "r")
-            current = f.readline().strip()
-            f.close()
-        except Exception as e:
-            print()
-            if hasattr(sys, "print_exception"):
-                sys.print_exception(e)
-            else:
-                print(e)
-            print()
+        current = self.get_stored_commit()
 
         if verbose:
             if current != commit:
@@ -132,14 +152,72 @@ class PicoOTA:
                 print("Writing " + f["path"] + " to " + self.update_path)
 
             # overwrite existing file
-            f = open(os.path.join(self.update_path, f["path"]), "w")
-            f.write(r)
-            f.close()
+            fo = open(os.path.join(self.update_path, f["path"]), "w")
+            fo.write(r)
+            fo.close()
+
+            if f["path"] == self.exe_path:
+                if verbose:
+                    print("Writing " + f["path"] + " to main.py")
+
+                fo = open(os.path.join(self.update_path, "main.py"), "w")
+                fo.write(r)
+                fo.close()
 
         # Write new commit id to local file
-        f = open(os.path.join(self.update_path, "ota_version"), "w")
+        f = open(os.path.join(self.update_path, self.version_file), "w")
         f.write(commit + os.linesep)
         f.close()
+
+def non_pico_ota_test(ota):
+    if not os.path.exists("tmp"):
+        os.makedirs("tmp")
+    ota.path("tmp")
+
+    print("Checking for updates")
+    newer, commit = ota.check(True)
+    print()
+
+    # Just for testing
+    previous = ota.get_previous_commit(commit)
+    print("Previous commit (-1):", previous)
+    previous = ota.get_previous_commit(previous)
+    print("Previous commit (-2):", previous)
+    print()
+
+    if newer:
+        print("Updating")
+        ota.update_to_commit(commit, True)
+    else:
+        print("No update required")
+
+def pico_ota_run(ota):
+    newer, commit = ota.check(True)
+
+    if newer:
+        ota.update_to_commit(commit, True)
+        machine.soft_reset()
+
+    fallback = False
+
+    try:
+        import camp_pico
+    except Exception as e:
+        fallback = True
+        print()
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
+        print()
+
+    # TODO this would immediately cause another update on reboot
+    # TODO set a flag to prevent updates after fallbacks?
+    # TODO or better, blacklist failed commit_id!
+    #if fallback:
+    #    previous = ota.get_previous_commit(commit, True)
+    #    ota.update_to_commit(previous, True)
+    #    machine.soft_reset()
 
 if __name__ == "__main__":
     ota = PicoOTA("https://git.xythobuz.de", "thomas/rgb-matrix-visualizer")
@@ -157,11 +235,9 @@ if __name__ == "__main__":
     ota.ignore("pi.py")
     ota.ignore("test.py")
 
-    if not on_pico:
-        if not os.path.exists("tmp"):
-            os.makedirs("tmp")
-        ota.path("tmp")
+    ota.exe("camp_pico.py")
 
-    newer, commit = ota.check(True)
-    if newer:
-        ota.update_to_commit(commit, True)
+    if not on_pico:
+        non_pico_ota_test(ota)
+    else:
+        pico_ota_run(ota)

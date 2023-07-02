@@ -57,7 +57,7 @@ if __name__ == "__main__":
         global s, colors, ci, n, c
 
         now = time.time()
-        if ((now - s) >= 0.1) or (now < s):
+        if ((now - s) >= 0.5) or (now < s):
             s = now
             n += 1
             if n >= 15:
