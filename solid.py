@@ -71,4 +71,4 @@ if __name__ == "__main__":
 
         d.draw()
 
-    t.loop(helper)
+    util.loop(t, helper)

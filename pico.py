@@ -77,6 +77,9 @@ class PicoMatrix:
 
         self.loop_start() # initialize with blank image for ScrollText constructor
 
+    def exit(self):
+        self.matrix.stop()
+
     def battery(self):
         n = const(10)
         bits = const(10)
@@ -151,18 +154,6 @@ class PicoMatrix:
 
         # update battery if necessary
         self.batteryCache(False)
-
-    def loop(self, func = None):
-        while True:
-            if self.loop_start():
-                break
-
-            if func != None:
-                func()
-
-            self.loop_end()
-
-        self.matrix.stop()
 
     def set_pixel(self, x, y, color):
         if (x < 0) or (y < 0) or (x >= self.width) or (y >= self.height):
@@ -303,4 +294,4 @@ if __name__ == "__main__":
         else:
             s.text("Drinks:", "bitmap8", 0)
 
-    t.loop(helper)
+    util.loop(t, helper)

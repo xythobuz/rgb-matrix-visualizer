@@ -69,4 +69,4 @@ m.add(PicoBatt(t, 5.0, 5.0))
 m.add(Solid(t, 1.0))
 
 m.restart()
-t.loop(m.draw)
+util.loop(t, m.draw)

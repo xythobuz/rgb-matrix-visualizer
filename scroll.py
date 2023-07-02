@@ -80,4 +80,4 @@ if __name__ == "__main__":
         m.add(ScrollText(t, s, fontName, 1, 75, (0, 255, 0), (0, 0, 25)))
 
     m.restart()
-    t.loop(m.draw)
+    util.loop(t, m.draw)

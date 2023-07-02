@@ -49,7 +49,8 @@ class QRScreen:
                     self.c1 = (255, 255, 255)
                     self.c2 = (0, 0, 0)
                 else:
-                    raise RuntimeError("QR colors other than black/white not supported on Pi")
+                    # Use default colors for QR code, and colors for text
+                    self.image = qr.make_image(fill_color = "white", back_color = "black")
             else:
                 self.image = qr.make_image(fill_color = self.c1, back_color = self.c2)
         else:
@@ -91,9 +92,11 @@ class QRScreen:
                     self.gui.set_pixel(x + self.xOff + self.image.width, y + self.yOff, self.c2)
 
         if self.heading != None:
-            off = -10
+            off = 0
             if self.font == "bitmap6":
-                off -= 3
+                off = -14
+            elif self.font == "tom-thumb":
+                off = -11
 
             self.text.text(self.heading, self.font, 0, True, off)
 
@@ -135,4 +138,4 @@ if __name__ == "__main__":
             print(e)
             print()
 
-    t.loop(d.draw)
+    util.loop(t, d.draw)

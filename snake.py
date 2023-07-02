@@ -21,11 +21,11 @@ class Snake:
         self.speedup = su
 
         self.winText = ScrollText(self.gui, "You Won!", "uushi",
-                                  2, 75, (0, 255, 0))
+                                  2, 50, (0, 255, 0))
         self.loseText = ScrollText(self.gui, "Game Over!", "uushi",
-                                   2, 75, (255, 0, 0))
+                                   2, 50, (255, 0, 0))
         self.scoreText = ScrollText(self.gui, "Score:", "uushi",
-                                    2, 75, sc)
+                                    2, 50, sc)
 
         random.seed()
         self.restart()
@@ -46,6 +46,14 @@ class Snake:
             "right": False,
             "up": False,
             "down": False,
+            "a": False,
+            "b": False,
+            "x": False,
+            "y": False,
+            "l": False,
+            "r": False,
+            "start": False,
+            "select": False,
         }
 
         self.placeDot()
@@ -71,13 +79,13 @@ class Snake:
     def buttons(self):
         keys = self.input.get()
 
-        if keys["left"] and (not self.old_keys["left"]):
+        if keys["left"] and (not self.old_keys["left"]) and (not self.old_keys["select"]):
             self.directionTmp = "l"
-        elif keys["right"] and (not self.old_keys["right"]):
+        elif keys["right"] and (not self.old_keys["right"]) and (not self.old_keys["select"]):
             self.directionTmp = "r"
-        elif keys["up"] and (not self.old_keys["up"]):
+        elif keys["up"] and (not self.old_keys["up"]) and (not self.old_keys["select"]):
             self.directionTmp = "u"
-        elif keys["down"] and (not self.old_keys["down"]):
+        elif keys["down"] and (not self.old_keys["down"]) and (not self.old_keys["select"]):
             self.directionTmp = "d"
         elif (keys["select"] and keys["start"] and (not self.old_keys["start"])) or (keys["start"] and keys["select"] and (not self.old_keys["select"])):
             self.restart()
@@ -175,7 +183,7 @@ if __name__ == "__main__":
     i = InputWrapper()
 
     import util
-    t = util.getTarget()
+    t = util.getTarget(i)
 
     d = Snake(t, i)
-    t.loop(d.draw)
+    util.loop(t, d.draw)

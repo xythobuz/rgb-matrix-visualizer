@@ -13,14 +13,14 @@
 import pygame
 
 class TestGUI:
-    def __init__(self, width = 32, height = 32, multiplier = 16):
+    def __init__(self, width = 32 * 2, height = 32, multiplier = 16):
         self.width = width
         self.height = height
         self.multiplier = multiplier
 
         # compatibility to PiMatrix
-        self.panelW = self.width
-        self.panelH = self.height
+        self.panelW = 32
+        self.panelH = 32
 
         pygame.display.init()
         self.screen = pygame.display.set_mode((self.width * self.multiplier, self.height * self.multiplier))
@@ -45,15 +45,6 @@ class TestGUI:
         pygame.display.flip()
         self.clock.tick(30)
 
-    def loop(self, func = None):
-        while True:
-            if self.loop_start():
-                break
-            if func != None:
-                func()
-            self.loop_end()
-        self.exit()
-
     def set_pixel(self, x, y, color):
         if (x < 0) or (y < 0) or (x >= self.width) or (y >= self.height):
             return
@@ -62,4 +53,4 @@ class TestGUI:
 
 if __name__ == "__main__":
     t = TestGUI(32, 32)
-    t.loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
+    util.loop(t, lambda: t.set_pixel(15, 15, (255, 255, 255)))

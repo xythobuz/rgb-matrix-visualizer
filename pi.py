@@ -69,20 +69,15 @@ class PiMatrix:
 
         self.loop_start() # initialize with blank image for ScrollText constructor
 
+    def exit(self):
+        pass
+
     def loop_start(self):
         self.image = Image.new('RGB', (self.width, self.height))
         return False # no input, never quit on our own
 
     def loop_end(self):
         self.matrix.SetImage(self.image.convert('RGB'))
-
-    def loop(self, func = None):
-        while True:
-            if self.loop_start():
-                break
-            if func != None:
-                func()
-            self.loop_end()
 
     def set_pixel(self, x, y, color):
         if (x < 0) or (y < 0) or (x >= self.width) or (y >= self.height):
@@ -92,4 +87,4 @@ class PiMatrix:
 
 if __name__ == "__main__":
     t = PiMatrix(32, 32)
-    t.loop(lambda: t.set_pixel(15, 15, (255, 255, 255)))
+    util.loop(t, lambda: t.set_pixel(15, 15, (255, 255, 255)))

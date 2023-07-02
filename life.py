@@ -151,4 +151,4 @@ if __name__ == "__main__":
             g.restart()
         g.draw()
 
-    t.loop(helper)
+    util.loop(t, helper)

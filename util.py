@@ -29,7 +29,7 @@ def isPico():
 
     return targetPlatform == "pico"
 
-def getTarget():
+def getTarget(i = None):
     global targetPlatform, cachedTarget
 
     if cachedTarget != None:
@@ -42,8 +42,9 @@ def getTarget():
         pi = PiMatrix()
 
         # TODO hard-coded adjustments
-        from mapper import MapperColorAdjust, MapperStripToRect
-        col = MapperColorAdjust(pi)
+        from mapper import MapperReduceBrightness, MapperColorAdjust, MapperStripToRect
+        bright = MapperReduceBrightness(pi, i)
+        col = MapperColorAdjust(bright)
         #target = MapperStripToRect(col)
         target = col
 
@@ -68,7 +69,7 @@ def getTarget():
 
             # TODO hard-coded adjustments
             from mapper import MapperReduceBrightness
-            target = MapperReduceBrightness(pico)
+            target = MapperReduceBrightness(pico, i)
 
             if targetPlatform == None:
                 # only print once
@@ -223,3 +224,12 @@ def getTextDrawer():
         return PicoText
 
     return None
+
+def loop(gui, func = None):
+    while True:
+        if gui.loop_start():
+            break
+        if func != None:
+            func()
+        gui.loop_end()
+    gui.exit()

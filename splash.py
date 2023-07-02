@@ -41,4 +41,4 @@ if __name__ == "__main__":
     import util
     t = util.getTarget()
     s = SplashScreen(t)
-    t.loop(s.draw)
+    util.loop(t, s.draw)

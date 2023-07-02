@@ -72,12 +72,17 @@ class Manager:
 
     def switch_to(self, i, update_flag):
         self.lastTime = time.time()
-        self.index = int((int(self.index / self.step_size) + i) * self.step_size) % len(self.screens)
-
-        #print("Manager ", len(self.screens), " switch to ", self.index, update_flag)
 
         if update_flag:
             self.done = (self.index == 0)
+
+            # go through all for normal operation
+            self.index = (self.index + i) % len(self.screens)
+        else:
+            # use step_size for button presses
+            self.index = int((int(self.index / self.step_size) + i) * self.step_size) % len(self.screens)
+
+        #print("Manager ", len(self.screens), " switch to ", self.index, update_flag)
 
         self.screens[self.index][0].restart()
 
@@ -131,4 +136,4 @@ if __name__ == "__main__":
     m.add(Solid(t, 1.0))
 
     m.restart()
-    t.loop(m.draw)
+    util.loop(t, m.draw)

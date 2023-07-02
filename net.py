@@ -122,4 +122,4 @@ if __name__ == "__main__":
     d.success(Solid(t, 1.0, (0, 255, 0)))
     d.fail(Solid(t, 1.0, (255, 0, 0)))
 
-    t.loop(d.draw)
+    util.loop(t, d.draw)

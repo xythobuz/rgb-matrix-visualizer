@@ -34,14 +34,14 @@ class MapperNull:
     def batteryCache(self, refresh = False):
         return self.gui.batteryCache(refresh)
 
+    def exit(self):
+        self.gui.exit()
+
     def loop_start(self):
         return self.gui.loop_start()
 
     def loop_end(self):
         self.gui.loop_end()
-
-    def loop(self, func = None):
-        self.gui.loop(func)
 
     def set_pixel(self, x, y, color):
         self.gui.set_pixel(x, y, color)
@@ -98,61 +98,107 @@ class MapperStripToRect(MapperNull):
 # this needs to be the "first" element of the mapper chain.
 # Otherwise special handling for PicoText will not work.
 class MapperReduceBrightness(MapperNull):
-    def __init__(self, g):
+    def __init__(self, g, i = None):
         super().__init__(g)
+        self.input = i
         self.last = None
         self.connected = False
         self.refresh = 60 * 60 * 6
         self.factor = 1.0
+        self.user_mod = None
+        self.old_keys = {
+            "left": False,
+            "right": False,
+            "up": False,
+            "down": False,
+            "a": False,
+            "b": False,
+            "x": False,
+            "y": False,
+            "l": False,
+            "r": False,
+            "start": False,
+            "select": False,
+        }
 
     def fetch(self):
-        self.factor = 1.0
-
-        if not useNTP:
-            return
-
-        if not self.connected:
-            self.connected = util.connectToWiFi()
-
-        if self.connected:
-            now = time.time()
-            if (self.last == None) or ((now - self.last) >= self.refresh) or (now < self.last):
-                self.last = now
-
-                try:
-                    print("Before sync： " + str(time.localtime()))
-                    ntptime.settime()
-                    print("After sync： "  + str(time.localtime()))
-                except Exception as e:
-                    print()
-                    if hasattr(sys, "print_exception"):
-                        sys.print_exception(e)
-                    else:
-                        print(e)
-                    print()
-
-                    return
+        if useNTP:
+            if not self.connected:
+                self.connected = util.connectToWiFi()
+            if self.connected:
+                now = time.time()
+                if (self.last == None) or ((now - self.last) >= self.refresh) or (now < self.last):
+                    self.last = now
+                    try:
+                        print("Before sync： " + str(time.localtime()))
+                        ntptime.settime()
+                        print("After sync： "  + str(time.localtime()))
+                    except Exception as e:
+                        print()
+                        if hasattr(sys, "print_exception"):
+                            sys.print_exception(e)
+                        else:
+                            print(e)
+                        print()
+                        return
+        else:
+            if self.last == None:
+                self.last = time.time()
+                print("Time: " + str(time.localtime()))
 
         # (year, month, day, hour, minute, second, ?, ?)
         now = time.localtime()
 
-        # 8pm utc == 22pm dst germany
-        night = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
+        # TODO ntptime is setting to UTC, host is on proper timezone
+        if useNTP:
+            # 8pm utc == 10pm cest germany
+            night = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
 
-        # 5am utc == 7am dst germany
-        morning = (now[0], now[1], now[2], 5, 0, 0, 0, 0)
+            # 5am utc == 7am cest germany
+            morning = (now[0], now[1], now[2], 5, 0, 0, 0, 0)
+        else:
+            # 10pm cest germany
+            night = (now[0], now[1], now[2], 22, 0, 0, 0, 0)
+
+            # 7am cest germany
+            morning = (now[0], now[1], now[2], 7, 0, 0, 0, 0)
 
         if (now > morning) and (now < night):
             self.factor = 1.0
         else:
             self.factor = 0.42
 
+    def buttons(self):
+        keys = self.input.get()
+
+        if (keys["select"] and keys["up"] and (not self.old_keys["up"])) or (keys["up"] and keys["select"] and (not self.old_keys["select"])):
+            self.factor += 0.05
+            self.factor = min(self.factor, 0.95)
+            self.user_mod = time.time()
+        elif (keys["select"] and keys["down"] and (not self.old_keys["down"])) or (keys["down"] and keys["select"] and (not self.old_keys["select"])):
+            self.factor -= 0.05
+            self.factor = max(self.factor, 0.05)
+            self.user_mod = time.time()
+
+        self.old_keys = keys.copy()
+
     def adjust(self, color):
         return (int(color[0] * self.factor), int(color[1] * self.factor), int(color[2] * self.factor))
 
+    def loop_start(self):
+        if self.input != None:
+            self.buttons()
+
+        return super().loop_start()
+
     def loop_end(self):
         super().loop_end()
-        self.fetch()
+
+        if self.user_mod == None:
+            self.fetch()
+        elif (time.time() - self.user_mod) > self.refresh:
+            # fall back from user-modified factor after 6h
+            self.user_mod = None
 
     def set_pixel(self, x, y, color):
         color = self.adjust(color)

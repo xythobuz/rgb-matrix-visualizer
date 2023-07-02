@@ -164,4 +164,4 @@ if __name__ == "__main__":
                 print()
 
     m.restart()
-    t.loop(m.draw)
+    util.loop(t, m.draw)
