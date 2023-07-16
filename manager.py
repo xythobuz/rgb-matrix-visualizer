@@ -109,23 +109,15 @@ if __name__ == "__main__":
     from life import GameOfLife
 
     import util
-    t = util.getTarget()
+    i = util.getInput()
+    t = util.getTarget(i)
 
     splash = SplashScreen(t)
     t.loop_start()
     splash.draw()
     t.loop_end()
 
-    m = Manager(t)
-
-    m.add(ScrollText(t, "This appears once", "ib8x8u"))
-    m.add(Solid(t, 1.0))
-
-    m.add(ScrollText(t, "And this twice...", "ib8x8u", 2))
-    m.add(Solid(t, 1.0))
-
-    m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 20.0, True))
-    m.add(Solid(t, 1.0))
+    m = Manager(t, i)
 
     sub = Manager(t)
     sub.add(ScrollText(t, "Hello", "ib8x8u"))
@@ -133,6 +125,15 @@ if __name__ == "__main__":
     sub.add(ScrollText(t, "World", "ib8x8u"))
     sub.add(Solid(t, 1.0, (0, 0, 255)))
     m.add(sub)
+    m.add(Solid(t, 1.0))
+
+    m.add(ScrollText(t, "This appears once", "ib8x8u"))
+    m.add(Solid(t, 1.0))
+
+    m.add(ScrollText(t, "And this twice...", "ib8x8u", 2))
+    m.add(Solid(t, 1.0))
+
+    m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), 5.0, True))
     m.add(Solid(t, 1.0))
 
     m.restart()

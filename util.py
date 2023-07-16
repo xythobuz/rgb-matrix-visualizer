@@ -65,7 +65,7 @@ def getTarget(i = None):
         try:
             # Next we try the Pico Interstate75 interface
             from pico import PicoMatrix
-            pico = PicoMatrix()
+            pico = PicoMatrix(i)
 
             # TODO hard-coded adjustments
             from mapper import MapperReduceBrightness
@@ -222,6 +222,25 @@ def getTextDrawer():
         # fall back to the Pico Interstate75 implementation
         from pico import PicoText
         return PicoText
+
+    return None
+
+def getInput():
+    try:
+        # try evdev library
+        from gamepad import InputWrapper
+        return InputWrapper()
+    except Exception as e:
+        print()
+        if hasattr(sys, "print_exception"):
+            sys.print_exception(e)
+        else:
+            print(e)
+        print()
+
+        # fall back to the Pico Interstate75 implementation
+        from pico import PicoInput
+        return PicoInput()
 
     return None
 

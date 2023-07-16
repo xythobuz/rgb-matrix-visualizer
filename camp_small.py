@@ -28,8 +28,7 @@ url = "http://www.xythobuz.de"
 scroll_speed = 15
 
 # Need to import InputWrapper before initializing RGB Matrix on Pi
-i = InputWrapper()
-
+i = util.getInput()
 t = util.getTarget(i)
 
 # Loading fonts and graphics takes a while.

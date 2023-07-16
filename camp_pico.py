@@ -27,7 +27,8 @@ from pico import PicoBatt
 url = "http://www.xythobuz.de"
 
 import util
-t = util.getTarget()
+i = util.getInput()
+t = util.getTarget(i)
 
 # Loading fonts and graphics takes a while.
 # So show a splash screen while the user waits.
@@ -60,7 +61,7 @@ d.success(success)
 d.fail(fail)
 
 # Main "Menu"
-m = Manager(t)
+m = Manager(t, i)
 m.add(QRScreen(t, img_data, 15.0))
 m.add(Solid(t, 1.0))
 m.add(d) # HTTP Check, either "success" or "fail"

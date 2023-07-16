@@ -47,7 +47,7 @@ def batt_to_color(batt):
     return r, g, b
 
 class PicoMatrix:
-    def __init__(self, w = 32, h = 32):
+    def __init__(self, input = None, w = 32, h = 32):
         self.width = w # x-axis
         self.height = h # y-axis
 
@@ -59,6 +59,10 @@ class PicoMatrix:
 
         if (w != 32) or (h != 32):
             raise RuntimeError("TODO not yet supported")
+
+        self.input = input
+        if self.input != None:
+            self.input.gui = self
 
         mode = interstate75.DISPLAY_INTERSTATE75_32X32
         self.matrix = interstate75.Interstate75(display = mode, panel_type = hub75.PANEL_FM6126A)
@@ -283,6 +287,30 @@ class PicoBatt:
             self.drawImage(refresh)
         else:
             self.drawText(refresh)
+
+class PicoInput:
+    def __init__(self):
+        self.gui = None
+        self.keys = {
+            "left": False,
+            "right": False,
+            "up": False,
+            "down": False,
+            "a": False,
+            "b": False,
+            "x": False,
+            "y": False,
+            "l": False,
+            "r": False,
+            "start": False,
+            "select": False,
+        }
+
+    def get(self):
+        if self.gui != None:
+            self.keys["l"] = self.gui.matrix.switch_pressed(interstate75.SWITCH_A)
+            self.keys["r"] = self.gui.matrix.switch_pressed(interstate75.SWITCH_B)
+        return self.keys
 
 if __name__ == "__main__":
     import time

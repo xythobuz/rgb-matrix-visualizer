@@ -422,9 +422,7 @@ class Tetris:
 
 if __name__ == "__main__":
     # Need to import InputWrapper before initializing RGB Matrix on Pi
-    from gamepad import InputWrapper
-    i = InputWrapper()
-
+    i = util.getInput()
     t = util.getTarget(i)
 
     # show splash screen while initializing

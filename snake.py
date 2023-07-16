@@ -178,11 +178,9 @@ class Snake:
                 self.gui.set_pixel(x, y, self.colors[self.data[x][y]])
 
 if __name__ == "__main__":
-    # Need to import InputWrapper before initializing RGB Matrix on Pi
-    from gamepad import InputWrapper
-    i = InputWrapper()
-
     import util
+    # Need to import InputWrapper before initializing RGB Matrix on Pi
+    i = util.getInput()
     t = util.getTarget(i)
 
     d = Snake(t, i)
