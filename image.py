@@ -133,6 +133,10 @@ if __name__ == "__main__":
     for f in os.listdir(os.fsencode(imageDir)):
         filename = os.fsdecode(f)
 
+        if len(sys.argv) > 1:
+            if not sys.argv[1] in filename:
+                continue
+
         d = ImageScreen(t, filename)
         m.add(d)
 
