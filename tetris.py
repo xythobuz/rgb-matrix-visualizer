@@ -41,10 +41,18 @@ class Tetris:
 
         DrawText = util.getTextDrawer()
         self.text = []
-        self.text.append(DrawText(self.gui, self.colors[1]))
-        self.text.append(DrawText(self.gui, self.colors[0]))
-        self.text.append(DrawText(self.gui, self.colors[4]))
-        self.text.append(DrawText(self.gui, self.colors[5]))
+        self.text.append(DrawText(self.gui, self.colors[1])) # Green, "Score"
+        self.text.append(DrawText(self.gui, self.colors[0])) # Pink, Score Number
+        self.text.append(DrawText(self.gui, self.colors[4])) # Yellow, "Paused"
+        self.text.append(DrawText(self.gui, self.colors[5])) # Blue, "next"
+        self.text.append(DrawText(self.gui, self.colors[0])) # Pink, "Tetris"
+        self.text.append(DrawText(self.gui, self.colors[5])) # Blue, "up"
+        self.text[0].setText("Score:", "tom-thumb")
+        self.text[1].setText("0", "tom-thumb")
+        self.text[2].setText("Paused", "tom-thumb")
+        self.text[3].setText("next", "tom-thumb")
+        self.text[4].setText("Tetris", "tom-thumb")
+        self.text[5].setText("up", "tom-thumb")
 
         # all [y][x] sub-lists must be the same length
         self.pieces = [
@@ -119,6 +127,7 @@ class Tetris:
         self.last = time.time()
         self.button = None
         self.score = 0
+        self.text[1].setText(str(self.score), "tom-thumb")
         self.done = False
         self.data = [[self.bg for y in range(self.height)] for x in range(self.width)]
         self.piece = None
@@ -206,6 +215,7 @@ class Tetris:
 
             if had_data and line_full:
                 self.score += 1
+                self.text[1].setText(str(self.score), "tom-thumb")
 
                 # move stuff above into this line
                 for y2 in reversed(range(1, y + 1)):
@@ -336,11 +346,11 @@ class Tetris:
     def draw_stats(self, off):
         x_off, y_off = off
 
-        self.text[0].text("Score:", "tom-thumb", -x_off - 2, True, y_off - 11)
-        self.text[1].text(str(self.score), "tom-thumb", -x_off - 2, True, y_off - 5)
+        self.text[0].draw(-x_off - 2, y_off - 11)
+        self.text[1].draw(-x_off - 2, y_off - 5)
 
         if self.pause:
-            self.text[2].text("Paused", "tom-thumb", -x_off - 2, True, -y_off + 11)
+            self.text[2].draw(-x_off - 2, -y_off + 11)
 
     def draw(self):
         if self.input != None:
@@ -370,9 +380,9 @@ class Tetris:
                 self.endText.restart()
 
         # static text
-        self.text[1].text("Tetris", "tom-thumb", -2, True, -11)
-        self.text[3].text("next", "tom-thumb", -14, True, 5)
-        self.text[3].text("up", "tom-thumb", -14, True, 12)
+        self.text[4].draw(-2, -11)
+        self.text[3].draw(-14, 5)
+        self.text[5].draw(-14, 12)
 
         # draw play area and border
         for x in range(-1, self.width + 1):

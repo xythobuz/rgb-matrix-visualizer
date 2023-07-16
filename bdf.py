@@ -55,14 +55,14 @@ class DrawText:
 
             # center vertically, in case of
             # multiple stacked panels
-            # TODO hard-coded offsets assume 32x32 panels
-            if self.gui.height > 32:
-                offset += 16
+            if self.gui.height > self.gui.panelH:
+                offset += int(self.gui.panelH / 2)
 
             font = Font(os.path.join(fontDir, filename))
             data = (font, offset, {}, spacing)
             self.fonts[filename[:-4]] = data
 
+    # internal
     def getGlyph(self, c, font):
         if not isinstance(font, str):
             # fall-back to first available font
@@ -91,34 +91,58 @@ class DrawText:
 
         return (cache[c], offset, spacing)
 
+    # internal
     def drawGlyph(self, g, xOff, yOff, spacing):
-        if xOff >= self.gui.width:
-            return
-
-        for x in range(0, g.width):
+        for x in range(0, g.width + spacing):
             for y in range(0, g.height):
-                xTarget = xOff + x
-                if (xTarget < 0) or (xTarget >= self.gui.width):
-                    continue
+                pos = (xOff + x, yOff + y)
+                if x >= g.width:
+                    self.image.putpixel(pos, self.bg)
+                else:
+                    p = g.getpixel((x, y))
+                    self.image.putpixel(pos, p)
 
-                p = g.getpixel((x, y))
-                self.gui.set_pixel(xTarget, yOff + y, p)
-
-        for x in range(0, spacing):
-            for y in range(0, g.height):
-                self.gui.set_pixel(xOff + x + g.width, yOff + y, self.bg)
-
-    def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0):
+    # text drawing API
+    def setText(self, s, f):
+        # calculate length of whole text
         w = 0
+        h = 0
         for c in s:
-            xOff = -offset + w
-            if earlyAbort:
-                if xOff >= self.gui.width:
-                    break
-
             g, y, spacing = self.getGlyph(c, f)
             w += g.width + spacing
+            if h < g.height:
+                h = g.height
 
-            if xOff >= -16: # some wiggle room so chars dont disappear
-                self.drawGlyph(g, xOff, y + yOff, spacing)
-        return w
+        # create new blank image buffer
+        self.image = Image.new('RGBA', (w, h))
+
+        # render glyphs into image
+        w = 0
+        for c in s:
+            g, y, spacing = self.getGlyph(c, f)
+            self.drawGlyph(g, w, 0, spacing)
+            w += g.width + spacing
+            self.yOffset = y
+
+    # text drawing API
+    def getDimensions(self):
+        return (self.image.width, self.image.height)
+
+    # text drawing API
+    def draw(self, xOff = 0, yOff = 0):
+        for x in range(0, self.image.width):
+            xTarget = -xOff + x
+            if xTarget < 0:
+                continue
+            if xTarget >= self.gui.width:
+                break
+
+            for y in range(0, self.image.height):
+                yTarget = yOff + y + self.yOffset
+                if yTarget < 0:
+                    continue
+                if yTarget >= self.gui.height:
+                    break
+
+                p = self.image.getpixel((x, y))
+                self.gui.set_pixel(xTarget, yTarget, p)

@@ -63,6 +63,7 @@ class QRScreen:
         if self.heading != None:
             DrawText = util.getTextDrawer()
             self.text = DrawText(self.gui, self.c1, self.c2)
+            self.text.setText(self.heading, self.font)
             self.yOff = self.gui.height - self.image.height
         else:
             self.yOff = int((self.gui.height - self.image.height) / 2)
@@ -98,7 +99,7 @@ class QRScreen:
             elif self.font == "tom-thumb":
                 off = -11
 
-            self.text.text(self.heading, self.font, 0, True, off)
+            self.text.draw(0, off)
 
         for x in range(0, self.image.width):
             for y in range(0, self.image.height):

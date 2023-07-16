@@ -32,7 +32,8 @@ class ScrollText:
     def setText(self, t, f):
         self.text = t
         self.font = f
-        self.width = self.drawer.text(self.text, self.font, 0, False)
+        self.drawer.setText(t, f)
+        self.width, height = self.drawer.getDimensions()
 
     def restart(self):
         self.offset = -self.gui.width
@@ -52,7 +53,7 @@ class ScrollText:
                 self.offset = -self.gui.width
                 self.count += 1
 
-        self.drawer.text(self.text, self.font, self.offset, True)
+        self.drawer.draw(self.offset)
 
 if __name__ == "__main__":
     import util

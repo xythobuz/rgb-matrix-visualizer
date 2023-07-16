@@ -177,11 +177,19 @@ class PicoText:
         self.bg = bg
         self.color = c
 
-    def text(self, s, f, offset = 0, earlyAbort = True, yOff = 0, compat = True):
-        if not earlyAbort:
-            self.gui.matrix.display.set_font(f)
-            return self.gui.matrix.display.measure_text(s, scale=1)
+    # text drawing API
+    def setText(self, s, f):
+        self.text = s
+        self.font = f
 
+    # text drawing API
+    def getDimensions(self):
+        self.gui.matrix.display.set_font(self.font)
+        w = self.gui.matrix.display.measure_text(self.text, scale=1)
+        return (w, 42) # TODO wrong height
+
+    # text drawing API
+    def draw(self, xOff = 0, yOff = 0, compat = True):
         color = self.fg
         if isinstance(self.gui, MapperReduceBrightness):
             color = self.gui.adjust(color)
@@ -189,26 +197,26 @@ class PicoText:
         pen = self.gui.matrix.display.create_pen(color[0], color[1], color[2])
         self.gui.matrix.display.set_pen(pen)
 
-        self.gui.matrix.display.set_font(f)
+        self.gui.matrix.display.set_font(self.font)
 
         if not compat:
             # absolute positioning
-            x = offset
+            x = xOff
             y = yOff
         else:
             # centered, like BDF DrawText implementation
             fontOff = 0
-            if f == "bitmap6":
+            if self.font == "bitmap6":
                 fontOff = 3
-            elif f == "bitmap8":
+            elif self.font == "bitmap8":
                 fontOff = 4
-            elif f == "bitmap14_outline":
+            elif self.font == "bitmap14_outline":
                 fontOff = 7
 
-            x = -offset
+            x = -xOff
             y = int(self.gui.height / 2 - fontOff + yOff)
 
-        self.gui.matrix.display.text(s, x, y, scale=1)
+        self.gui.matrix.display.text(self.text, x, y, scale=1)
 
 class PicoBatt:
     def __init__(self, g, ti = 5.0, tt = 5.0):
@@ -230,12 +238,16 @@ class PicoBatt:
         c = batt_to_color(batt)
 
         self.text.fg = (255, 255, 255)
-        self.text.text(                  "Batt:", "bitmap8", 0, True, 8 * 0, False)
+        self.text.setText(                  "Batt:", "bitmap8")
+        self.text.draw(0, 8 * 0, False)
 
         self.text.fg = c
-        self.text.text("{:.2f}%".format(batt[0]), "bitmap8", 0, True, 8 * 1, False)
-        self.text.text("{:.2f}V".format(batt[1]), "bitmap8", 0, True, 8 * 2, False)
-        self.text.text("{:.2f}V".format(batt[2]), "bitmap8", 0, True, 8 * 3, False)
+        self.text.setText("{:.2f}%".format(batt[0]), "bitmap8")
+        self.text.draw(0, 8 * 1, False)
+        self.text.setText("{:.2f}V".format(batt[1]), "bitmap8")
+        self.text.draw(0, 8 * 2, False)
+        self.text.setText("{:.2f}V".format(batt[2]), "bitmap8")
+        self.text.draw(0, 8 * 3, False)
 
     def drawImage(self, refresh = False):
         x_off = const(1)
@@ -251,9 +263,10 @@ class PicoBatt:
         fill_w = int(batt[0] / 100.0 * (w - nub_w))
 
         s = "{:.0f}%".format(batt[0])
-        s_w = self.text.text(s, "bitmap14_outline", 0, False)
+        self.text.setText(s, "bitmap14_outline")
+        s_w = self.text.getDimensions()[0]
         self.text.fg = (255, 255, 255)
-        self.text.text(s, "bitmap14_outline", int((self.gui.width - s_w) / 2), True, 1, False)
+        self.text.draw(int((self.gui.width - s_w) / 2), 1, False)
 
         for x in range(0, w - nub_w):
             for y in range(0, h):
@@ -273,6 +286,7 @@ class PicoBatt:
 
 if __name__ == "__main__":
     import time
+    import util
 
     t = PicoMatrix(32, 32)
     s = PicoText(t)
@@ -294,10 +308,14 @@ if __name__ == "__main__":
             b.draw(True)
             time.sleep(1.0)
         elif i == 4:
-            s.text("Abgj6", "bitmap6", 0, True, 0, False)
-            s.text("Abdgj8", "bitmap8", 0, True, 6 + 2, False)
-            s.text("Ag14", "bitmap14_outline", 0, True, 6 + 2 + 8 + 1, False)
+            s.setText("Abgj6", "bitmap6")
+            s.draw(0, 0, False)
+            s.setText("Abdgj8", "bitmap8")
+            s.draw(0, 6 + 2, False)
+            s.setText("Ag14", "bitmap14_outline")
+            s.draw(0, 6 + 2 + 8 + 1, False)
         else:
-            s.text("Drinks:", "bitmap8", 0)
+            s.setText("Drinks:", "bitmap8")
+            s.draw()
 
     util.loop(t, helper)
