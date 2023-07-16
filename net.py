@@ -37,6 +37,7 @@ class CheckHTTP:
         else:
             if hasattr(self.failScreen, "child_count"):
                 return self.failScreen.child_count(i)
+        return True
 
     # Compatibility to Manager button events
     def switch_to(self, i, update_flag):
@@ -88,7 +89,7 @@ class CheckHTTP:
 
     def finished(self):
         if self.get == None:
-            return True
+            return self.failScreen.finished()
 
         self.request()
         if self.response:
@@ -98,6 +99,7 @@ class CheckHTTP:
 
     def draw(self):
         if self.get == None:
+            self.failScreen.draw()
             return
 
         self.request()
