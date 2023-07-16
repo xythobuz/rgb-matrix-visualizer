@@ -125,11 +125,11 @@ if __name__ == "__main__":
             f.write("# size:" + str(d.image.width) + "x" + str(d.image.height) + os.linesep)
             f.write("qr_data = [" + os.linesep)
             for y in range(0, d.image.height):
-                f.write("    [" + os.linesep)
+                f.write(" [" + os.linesep)
                 for x in range(0, d.image.width):
                     s = str(d.image.getpixel((x, y)))
-                    f.write("        " + s + "," + os.linesep)
-                f.write("    ]," + os.linesep)
+                    f.write("  " + s + "," + os.linesep)
+                f.write(" ]," + os.linesep)
             f.write("]" + os.linesep)
     except Exception as e:
         print()
