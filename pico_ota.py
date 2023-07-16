@@ -42,6 +42,13 @@ class PicoOTA:
         self.version_file = "ota_version"
         self.blacklist = []
 
+        self.gui = None
+        self.text = None
+
+    def ui(self, g, t):
+        self.gui = g
+        self.text = t
+
     def path(self, p):
         self.update_path = p
 
@@ -157,6 +164,30 @@ class PicoOTA:
             if f["path"] in self.blacklist:
                 continue
 
+            if (self.gui != None) and (self.text != None):
+                self.gui.loop_start()
+
+                self.text.fg = (255, 255, 0)
+                self.text.setText("OTA", "bitmap6")
+                self.text.draw(0, 6 * 0, False)
+
+                self.text.fg = (255, 0, 255)
+                self.text.setText(commit[ 0 :  5], "bitmap6")
+                self.text.draw(0, 6 * 1, False)
+
+                self.text.fg = (0, 255, 255)
+                self.text.setText("Get", "bitmap6")
+                self.text.draw(0, 6 * 2, False)
+
+                self.text.fg = (0, 255, 0)
+                self.text.setText(f["path"][0 : 5], "bitmap6")
+                self.text.draw(0, 6 * 3, False)
+
+                self.text.setText(f["path"][5 : ], "bitmap6")
+                self.text.draw(0, 6 * 4, False)
+
+                self.gui.loop_end()
+
             gc.collect()
             if hasattr(gc, "mem_free"):
                 print("Collected Garbage:", gc.mem_free())
@@ -167,6 +198,30 @@ class PicoOTA:
             if verbose:
                 print("Writing " + f["path"] + " to " + self.update_path)
 
+            if (self.gui != None) and (self.text != None):
+                self.gui.loop_start()
+
+                self.text.fg = (255, 255, 0)
+                self.text.setText("OTA", "bitmap6")
+                self.text.draw(0, 6 * 0, False)
+
+                self.text.fg = (255, 0, 255)
+                self.text.setText(commit[ 0 :  5], "bitmap6")
+                self.text.draw(0, 6 * 1, False)
+
+                self.text.fg = (0, 255, 255)
+                self.text.setText("Write", "bitmap6")
+                self.text.draw(0, 6 * 2, False)
+
+                self.text.fg = (0, 255, 0)
+                self.text.setText(f["path"][0 : 5], "bitmap6")
+                self.text.draw(0, 6 * 3, False)
+
+                self.text.setText(f["path"][5 : ], "bitmap6")
+                self.text.draw(0, 6 * 4, False)
+
+                self.gui.loop_end()
+
             # overwrite existing file
             fo = open(self.update_path + "/" + f["path"], "w")
             fo.write(r)
@@ -176,7 +231,7 @@ class PicoOTA:
                 if verbose:
                     print("Writing " + f["path"] + " to main.py")
 
-                fo = open(self.update_path + "/" + "main.py", "w")
+                fo = open(self.update_path + "/main.py", "w")
                 fo.write(r)
                 fo.close()
 
@@ -207,23 +262,26 @@ def non_pico_ota_test(ota):
     else:
         print("No update required")
 
+if on_pico:
+    from pico import PicoText
+    i = util.getInput()
+    t = util.getTarget(i)
+    s = PicoText(t)
+
 def pico_ota_run(ota):
     gc.collect()
     print("Collected Garbage:", gc.mem_free())
 
-    i = util.getInput()
-    t = util.getTarget(i)
-
-    gc.collect()
-    print("Collected Garbage:", gc.mem_free())
-
-    from pico import PicoText
-    s = PicoText(t)
     t.loop_start()
+
+    s.fg = (255, 255, 0)
     s.setText("OTA", "bitmap6")
     s.draw(0, 6 * 0, False)
+
+    s.fg = (0, 255, 255)
     s.setText("Check", "bitmap6")
     s.draw(0, 6 * 2, False)
+
     t.loop_end()
 
     gc.collect()
@@ -237,16 +295,24 @@ def pico_ota_run(ota):
 
     if newer:
         t.loop_start()
+
+        s.fg = (255, 255, 0)
         s.setText("OTA", "bitmap6")
         s.draw(0, 6 * 0, False)
-        s.setText(commit[0 : 6], "bitmap6")
+
+        s.fg = (255, 0, 255)
+        s.setText(commit[ 0 :  5], "bitmap6")
         s.draw(0, 6 * 1, False)
-        s.setText(commit[6 : 12], "bitmap6")
+
+        s.setText(commit[ 5 : 10], "bitmap6")
         s.draw(0, 6 * 2, False)
-        s.setText(commit[12 : 18], "bitmap6")
+
+        s.setText(commit[10 : 15], "bitmap6")
         s.draw(0, 6 * 3, False)
-        s.setText(commit[18 : 24], "bitmap6")
+
+        s.setText(commit[15 : 20], "bitmap6")
         s.draw(0, 6 * 4, False)
+
         t.loop_end()
 
         print("Updating to:", commit)
@@ -256,10 +322,26 @@ def pico_ota_run(ota):
         machine.soft_reset()
     else:
         t.loop_start()
+
+        s.fg = (255, 255, 0)
         s.setText("OTA", "bitmap6")
         s.draw(0, 6 * 0, False)
-        s.setText("Done", "bitmap6")
+
+        s.fg = (0, 255, 0)
+        s.setText("Done!", "bitmap6")
+        s.draw(0, 6 * 1, False)
+
+        s.fg = (255, 0, 255)
+        s.setText("Boot", "bitmap6")
+        s.draw(0, 6 * 2, False)
+
+        s.fg = (0, 255, 255)
+        s.setText(ota.exe_path[0 : 5], "bitmap6")
         s.draw(0, 6 * 3, False)
+
+        s.setText(ota.exe_path[5 : ], "bitmap6")
+        s.draw(0, 6 * 4, False)
+
         t.loop_end()
 
     fallback = False
@@ -289,28 +371,25 @@ def pico_ota_run(ota):
     #    ota.update_to_commit(previous, True)
     #    machine.soft_reset()
 
-if True: #__name__ == "__main__":
-    ota = PicoOTA("https://git.xythobuz.de", "thomas/rgb-matrix-visualizer")
+ota = PicoOTA("https://git.xythobuz.de", "thomas/rgb-matrix-visualizer")
 
-    # stuff not needed on Pico
-    ota.ignore(".gitignore")
-    ota.ignore("README.md")
-    ota.ignore("copy.sh")
-    ota.ignore("config.py")
-    ota.ignore("fonts")
-    ota.ignore("hardware")
-    ota.ignore("images")
-    ota.ignore("bdf.py")
-    ota.ignore("camp_small.py")
-    ota.ignore("gamepad.py")
-    ota.ignore("pi.py")
-    ota.ignore("test.py")
+# stuff not needed on Pico
+ota.ignore(".gitignore")
+ota.ignore("README.md")
+ota.ignore("copy.sh")
+ota.ignore("config.py")
+ota.ignore("fonts")
+ota.ignore("hardware")
+ota.ignore("images")
+ota.ignore("bdf.py")
+ota.ignore("camp_small.py")
+ota.ignore("gamepad.py")
+ota.ignore("pi.py")
+ota.ignore("test.py")
 
-    if not on_pico:
-        non_pico_ota_test(ota)
-    else:
-        # TODO overwriting pico_ota causes problems?!
-        #ota.exe("pico_ota.py")
-        ota.ignore("pico_ota.py")
-
-        pico_ota_run(ota)
+if not on_pico:
+    non_pico_ota_test(ota)
+else:
+    ota.exe("pico_ota.py")
+    ota.ui(t, s)
+    pico_ota_run(ota)
