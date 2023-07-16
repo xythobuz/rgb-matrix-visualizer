@@ -209,7 +209,7 @@ class PicoOTA:
                 self.text.setText(commit[ 0 :  5], "bitmap6")
                 self.text.draw(0, 6 * 1, False)
 
-                self.text.fg = (0, 255, 255)
+                self.text.fg = (255, 0, 0)
                 self.text.setText("Write", "bitmap6")
                 self.text.draw(0, 6 * 2, False)
 
@@ -336,10 +336,10 @@ def pico_ota_run(ota):
         s.draw(0, 6 * 2, False)
 
         s.fg = (0, 255, 255)
-        s.setText(ota.exe_path[0 : 5], "bitmap6")
+        s.setText("camp_pico.py"[0 : 5], "bitmap6")
         s.draw(0, 6 * 3, False)
 
-        s.setText(ota.exe_path[5 : ], "bitmap6")
+        s.setText("camp_pico.py"[5 : ], "bitmap6")
         s.draw(0, 6 * 4, False)
 
         t.loop_end()
