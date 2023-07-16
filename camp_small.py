@@ -25,7 +25,7 @@ import util
 #url = "http://ubabot.frubar.net"
 url = "http://www.xythobuz.de"
 
-scroll_speed = 15
+scroll_speed = 50
 
 # Need to import InputWrapper before initializing RGB Matrix on Pi
 i = util.getInput()

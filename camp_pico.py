@@ -62,7 +62,7 @@ d.fail(fail)
 
 # Main "Menu"
 m = Manager(t, i)
-m.add(QRScreen(t, img_data, 15.0))
+m.add(QRScreen(t, img_data, 15.0, None, None, (255, 255, 255), (0, 0, 0)))
 m.add(Solid(t, 1.0))
 m.add(d) # HTTP Check, either "success" or "fail"
 m.add(Solid(t, 1.0))

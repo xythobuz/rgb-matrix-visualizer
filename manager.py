@@ -42,49 +42,50 @@ class Manager:
         keys = self.input.get()
 
         if keys["l"] and (not self.old_keys["l"]):
-            c = self.screens[self.index][0]
-            if hasattr(c, "switch_to") and hasattr(c, "child_count"):
-                if c.child_count(-1):
-                    self.switch_to(-1, False)
-                else:
-                    c.switch_to(-1, False)
-            else:
-                self.switch_to(-1, False)
+            self.switch_to(-1, False)
         elif keys["r"] and (not self.old_keys["r"]):
-            c = self.screens[self.index][0]
-            if hasattr(c, "switch_to") and hasattr(c, "child_count"):
-                if c.child_count(1):
-                    self.switch_to(1, False)
-                else:
-                    c.switch_to(1, False)
-            else:
-                self.switch_to(1, False)
+            self.switch_to(1, False)
 
         self.old_keys = keys.copy()
 
-    def child_count(self, i):
+    def child_count(self, i, update_flag):
         if i > 0:
-            index = int(self.index / self.step_size)
-            l = int(len(self.screens) / self.step_size)
+            if update_flag:
+                index = self.index
+                l = len(self.screens)
+            else:
+                index = int(self.index / self.step_size)
+                l = int(len(self.screens) / self.step_size)
+            #print(self.index, len(self.screens), index, l, (index >= (l - 1)))
             return index >= (l - 1)
         else:
             return self.index <= 0
 
-    def switch_to(self, i, update_flag):
+    def switch_this_to(self, i, update_flag):
         self.lastTime = time.time()
 
         if update_flag:
-            self.done = (self.index == 0)
-
             # go through all for normal operation
             self.index = (self.index + i) % len(self.screens)
         else:
             # use step_size for button presses
             self.index = int((int(self.index / self.step_size) + i) * self.step_size) % len(self.screens)
 
+        self.done = self.child_count(i, update_flag)
+
         #print("Manager ", len(self.screens), " switch to ", self.index, update_flag)
 
         self.screens[self.index][0].restart()
+
+    def switch_to(self, i, update_flag):
+        c = self.screens[self.index][0]
+        if hasattr(c, "switch_to") and hasattr(c, "child_count"):
+            if c.child_count(i, update_flag):
+                self.switch_this_to(i, update_flag)
+            else:
+                c.switch_to(i, update_flag)
+        else:
+            self.switch_this_to(i, update_flag)
 
     def draw(self):
         if self.input != None:
@@ -117,15 +118,15 @@ if __name__ == "__main__":
     splash.draw()
     t.loop_end()
 
-    m = Manager(t, i)
-
     sub = Manager(t)
     sub.add(ScrollText(t, "Hello", "ib8x8u"))
     sub.add(Solid(t, 1.0, (0, 255, 0)))
     sub.add(ScrollText(t, "World", "ib8x8u"))
     sub.add(Solid(t, 1.0, (0, 0, 255)))
+
+    m = Manager(t, i)
     m.add(sub)
-    m.add(Solid(t, 1.0))
+    m.add(Solid(t, 1.0, (255, 255, 0)))
 
     m.add(ScrollText(t, "This appears once", "ib8x8u"))
     m.add(Solid(t, 1.0))

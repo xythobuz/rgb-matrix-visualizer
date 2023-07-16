@@ -29,14 +29,14 @@ class CheckHTTP:
         self.failScreen = f
 
     # Compatibility to Manager button events
-    def child_count(self, i):
+    def child_count(self, i, update_flag):
         self.request()
         if self.response:
             if hasattr(self.successScreen, "child_count"):
-                return self.successScreen.child_count(i)
+                return self.successScreen.child_count(i, update_flag)
         else:
             if hasattr(self.failScreen, "child_count"):
-                return self.failScreen.child_count(i)
+                return self.failScreen.child_count(i, update_flag)
         return True
 
     # Compatibility to Manager button events

@@ -78,7 +78,7 @@ if __name__ == "__main__":
 
         fontName = filename[:-4]
         s = fontName + " Abcdefgh " + fontName
-        m.add(ScrollText(t, s, fontName, 1, 75, (0, 255, 0), (0, 0, 25)))
+        m.add(ScrollText(t, s, fontName, 1, 50, (0, 255, 0), (0, 0, 25)))
 
     m.restart()
     util.loop(t, m.draw)
