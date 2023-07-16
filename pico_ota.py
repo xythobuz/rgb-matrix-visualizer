@@ -15,6 +15,7 @@
 import util
 import sys
 import os
+import gc
 
 # to check if we're actually running on MicroPython
 on_pico = False
@@ -156,6 +157,10 @@ class PicoOTA:
             if f["path"] in self.blacklist:
                 continue
 
+            gc.collect()
+            if hasattr(gc, "mem_free"):
+                print("Collected Garbage:", gc.mem_free())
+
             # get a file from a commit
             r = self.fetch(self.host + "/" + self.repo + "/raw/commit/" + commit + "/" + f["path"]).text
 
@@ -203,48 +208,59 @@ def non_pico_ota_test(ota):
         print("No update required")
 
 def pico_ota_run(ota):
-    import gc
-    #gc.collect()
-    #print(gc.mem_free())
+    gc.collect()
+    print("Collected Garbage:", gc.mem_free())
 
     i = util.getInput()
     t = util.getTarget(i)
 
-    #gc.collect()
-    #print(gc.mem_free())
+    gc.collect()
+    print("Collected Garbage:", gc.mem_free())
 
-    # Loading fonts and graphics takes a while.
-    # So show a splash screen while the user waits.
-    from splash import SplashScreen
-    splash = SplashScreen(t)
+    from pico import PicoText
+    s = PicoText(t)
     t.loop_start()
-    splash.draw()
+    s.setText("OTA", "bitmap6")
+    s.draw(0, 6 * 0, False)
+    s.setText("Check", "bitmap6")
+    s.draw(0, 6 * 2, False)
     t.loop_end()
 
-    #gc.collect()
-    #print(gc.mem_free())
+    gc.collect()
+    print("Collected Garbage:", gc.mem_free())
 
     print("Checking for updates")
     newer, commit = ota.check(True)
 
-    #gc.collect()
-    #print(gc.mem_free())
+    gc.collect()
+    print("Collected Garbage:", gc.mem_free())
 
     if newer:
-        from pico import PicoText
-        s = PicoText(t)
-
-        s.setText("Update", "bitmap6")
-        s.draw(0, 0, False)
-
-        s.setText(commit, "bitmap6")
-        s.draw(0, 8, False)
+        t.loop_start()
+        s.setText("OTA", "bitmap6")
+        s.draw(0, 6 * 0, False)
+        s.setText(commit[0 : 6], "bitmap6")
+        s.draw(0, 6 * 1, False)
+        s.setText(commit[6 : 12], "bitmap6")
+        s.draw(0, 6 * 2, False)
+        s.setText(commit[12 : 18], "bitmap6")
+        s.draw(0, 6 * 3, False)
+        s.setText(commit[18 : 24], "bitmap6")
+        s.draw(0, 6 * 4, False)
+        t.loop_end()
 
         print("Updating to:", commit)
         ota.update_to_commit(commit, True)
 
         print("Resetting")
         machine.soft_reset()
+    else:
+        t.loop_start()
+        s.setText("OTA", "bitmap6")
+        s.draw(0, 6 * 0, False)
+        s.setText("Done", "bitmap6")
+        s.draw(0, 6 * 3, False)
+        t.loop_end()
 
     fallback = False
 
@@ -293,5 +309,8 @@ if True: #__name__ == "__main__":
     if not on_pico:
         non_pico_ota_test(ota)
     else:
-        ota.exe("pico_ota.py")
+        # TODO overwriting pico_ota causes problems?!
+        #ota.exe("pico_ota.py")
+        ota.ignore("pico_ota.py")
+
         pico_ota_run(ota)
