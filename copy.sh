@@ -4,6 +4,7 @@ if [ $# -ne 0 ] ; then
 cat << EOF | rshell
 cp config.py /pyboard
 cp pico.py /pyboard
+cp pico_ota.py /pyboard
 cp util.py /pyboard
 cp manager.py /pyboard
 cp mapper.py /pyboard
@@ -23,6 +24,7 @@ cat << EOF | rshell
 rm /pyboard/main.py
 cp config.py /pyboard
 cp pico.py /pyboard
+cp pico_ota.py /pyboard
 cp util.py /pyboard
 cp manager.py /pyboard
 cp mapper.py /pyboard

@@ -61,7 +61,18 @@ class PicoOTA:
         try:
             #print("GET " + url)
             r = self.get(url)
-            r.close()
+
+            # explitic close on Response object not needed,
+            # handled internally by r.content / r.text / r.json()
+            # to avoid this automatic behaviour, first access r.content
+            # to trigger caching it in response object, then close
+            # socket.
+            tmp = r.content
+            if hasattr(r, "raw"):
+                if r.raw != None:
+                    r.raw.close()
+                    r.raw = None
+
             return r
         except Exception as e:
             print()
@@ -75,7 +86,7 @@ class PicoOTA:
     def get_stored_commit(self):
         current = "unknown"
         try:
-            f = open(os.path.join(self.update_path, self.version_file), "r")
+            f = open(self.update_path + "/" + self.version_file, "r")
             current = f.readline().strip()
             f.close()
         except Exception as e:
@@ -152,7 +163,7 @@ class PicoOTA:
                 print("Writing " + f["path"] + " to " + self.update_path)
 
             # overwrite existing file
-            fo = open(os.path.join(self.update_path, f["path"]), "w")
+            fo = open(self.update_path + "/" + f["path"], "w")
             fo.write(r)
             fo.close()
 
@@ -160,13 +171,13 @@ class PicoOTA:
                 if verbose:
                     print("Writing " + f["path"] + " to main.py")
 
-                fo = open(os.path.join(self.update_path, "main.py"), "w")
+                fo = open(self.update_path + "/" + "main.py", "w")
                 fo.write(r)
                 fo.close()
 
         # Write new commit id to local file
-        f = open(os.path.join(self.update_path, self.version_file), "w")
-        f.write(commit + os.linesep)
+        f = open(self.update_path + "/" + self.version_file, "w")
+        f.write(commit + "\n")
         f.close()
 
 def non_pico_ota_test(ota):
@@ -192,24 +203,67 @@ def non_pico_ota_test(ota):
         print("No update required")
 
 def pico_ota_run(ota):
+    import gc
+    #gc.collect()
+    #print(gc.mem_free())
+
+    i = util.getInput()
+    t = util.getTarget(i)
+
+    #gc.collect()
+    #print(gc.mem_free())
+
+    # Loading fonts and graphics takes a while.
+    # So show a splash screen while the user waits.
+    from splash import SplashScreen
+    splash = SplashScreen(t)
+    t.loop_start()
+    splash.draw()
+    t.loop_end()
+
+    #gc.collect()
+    #print(gc.mem_free())
+
+    print("Checking for updates")
     newer, commit = ota.check(True)
 
+    #gc.collect()
+    #print(gc.mem_free())
+
     if newer:
+        from pico import PicoText
+        s = PicoText(t)
+
+        s.setText("Update", "bitmap6")
+        s.draw(0, 0, False)
+
+        s.setText(commit, "bitmap6")
+        s.draw(0, 8, False)
+
+        print("Updating to:", commit)
         ota.update_to_commit(commit, True)
+
+        print("Resetting")
         machine.soft_reset()
 
     fallback = False
 
     try:
+        gc.collect()
+        print("Collected Garbage:", gc.mem_free())
+
+        print("Starting Application")
         import camp_pico
     except Exception as e:
-        fallback = True
         print()
         if hasattr(sys, "print_exception"):
             sys.print_exception(e)
         else:
             print(e)
         print()
+
+        print("Falling back to previous")
+        fallback = True
 
     # TODO this would immediately cause another update on reboot
     # TODO set a flag to prevent updates after fallbacks?
@@ -219,7 +273,7 @@ def pico_ota_run(ota):
     #    ota.update_to_commit(previous, True)
     #    machine.soft_reset()
 
-if __name__ == "__main__":
+if True: #__name__ == "__main__":
     ota = PicoOTA("https://git.xythobuz.de", "thomas/rgb-matrix-visualizer")
 
     # stuff not needed on Pico
@@ -228,6 +282,7 @@ if __name__ == "__main__":
     ota.ignore("copy.sh")
     ota.ignore("config.py")
     ota.ignore("fonts")
+    ota.ignore("hardware")
     ota.ignore("images")
     ota.ignore("bdf.py")
     ota.ignore("camp_small.py")
@@ -235,9 +290,8 @@ if __name__ == "__main__":
     ota.ignore("pi.py")
     ota.ignore("test.py")
 
-    ota.exe("camp_pico.py")
-
     if not on_pico:
         non_pico_ota_test(ota)
     else:
+        ota.exe("pico_ota.py")
         pico_ota_run(ota)
