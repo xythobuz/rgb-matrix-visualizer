@@ -48,16 +48,16 @@ class MapperNull:
 
 # For some reason the red and green LEDs on older Pimoroni panels
 # are far brighter than on newer panels.
-# Adjust this by multiplying rg channels with 0.75, depending
-# on hard-corded coordinate ranges.
+# Adjust this by multiplying rg channels with 0.75 and b channel
+# with 0.85, depending on hard-corded coordinate ranges.
 class MapperColorAdjust(MapperNull):
     def set_pixel(self, x, y, color):
         # second panel from the left, with 32 <= x,
         # is "old" type with brighter LEDs.
         # rest of panels to the left are less bright.
-        # so adjust brightness of other panel rg channels down.
+        # so adjust brightness of other panel channels down.
         if x >= self.gui.panelW:
-            color = (int(color[0] * 0.75), int(color[1] * 0.75), color[2])
+            color = (int(color[0] * 0.75), int(color[1] * 0.75), color[2] * 0.85)
 
         self.gui.set_pixel(x, y, color)
 
