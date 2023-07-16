@@ -100,15 +100,21 @@ class PicoMatrix:
         # TODO supports only 2 points
         cal_pts = [
             #  adc,   bat
-            (13.65, 15.46),
-            (13.60, 15.34),
-            # TODO better values
+            #(13.65, 15.46),
+            #(13.60, 15.34),
+            (13.625, 15.4), # avg of above
+
+            (14.30, 16.13),
         ]
 
         # https://www.ti.com/europe/downloads/f2810_12_calibration_10.pdf
         gain = (cal_pts[0][1] - cal_pts[1][1]) / (cal_pts[0][0] - cal_pts[1][0])
         offset = cal_pts[1][1] - cal_pts[1][0] * gain
         v_bat = v_bat_uncal * gain + offset
+
+        # Use this to gather calibration data
+        #v_bat = v_bat_uncal
+        #print(v_bat)
 
         # TODO auto-detect cell count
         n_lipo = const(4) # 4S
