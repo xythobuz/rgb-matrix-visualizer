@@ -32,7 +32,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 from PIL import Image
 
 class PiMatrix:
-    def __init__(self, w = 32 * 2, h = 32, panelW = 32, panelH = 32):
+    def __init__(self, w = 32 * 4, h = 32, panelW = 32, panelH = 32):
         self.width = w # x-axis
         self.height = h # y-axis
 
@@ -86,5 +86,7 @@ class PiMatrix:
         self.image.putpixel((int(x), int(y)), color)
 
 if __name__ == "__main__":
-    t = PiMatrix(32, 32)
+    import util
+
+    t = PiMatrix()
     util.loop(t, lambda: t.set_pixel(15, 15, (255, 255, 255)))

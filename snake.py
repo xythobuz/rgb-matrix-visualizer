@@ -10,6 +10,7 @@
 from scroll import ScrollText
 import time
 import random
+import util
 
 class Snake:
     def __init__(self, g, i, sc = (0, 255, 0), d = (0, 0, 255), bg = (0, 0, 0), ts = 0.3, su = 0.75, to = 60.0):
@@ -27,6 +28,8 @@ class Snake:
         self.scoreText = ScrollText(self.gui, "Score:", "uushi",
                                     2, 50, sc)
 
+        self.text_c = (0, 0, 255)
+
         random.seed()
         self.restart()
 
@@ -40,6 +43,9 @@ class Snake:
 
         self.player = [ (int(self.gui.width / 2), int(self.gui.height / 2)) ]
         self.data[self.player[0][0]][self.player[0][1]] = 1
+
+        DrawText = util.getTextDrawer()
+        self.text = DrawText(self.gui, self.text_c)
 
         self.old_keys = {
             "left": False,
@@ -72,7 +78,7 @@ class Snake:
 
     def placeDot(self):
         d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
-        while self.data[d[0]][d[1]] != 0:
+        while self.data[d[0]][d[1]] != 0: # TODO don't place dots below score text
             d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
         self.data[d[0]][d[1]] = 2
 
@@ -177,8 +183,11 @@ class Snake:
             for y in range(0, self.gui.height):
                 self.gui.set_pixel(x, y, self.colors[self.data[x][y]])
 
+        # draw score
+        self.text.setText(str(self.score), "tom-thumb")
+        self.text.draw(-1, self.gui.height / 2 - 2)
+
 if __name__ == "__main__":
-    import util
     # Need to import InputWrapper before initializing RGB Matrix on Pi
     i = util.getInput()
     t = util.getTarget(i)

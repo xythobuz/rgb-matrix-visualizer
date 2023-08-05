@@ -65,6 +65,16 @@ class ImageScreen:
             self.image.is_animated = False
             self.image.n_frames = 1
 
+        # enlarge small images
+        if not self.image.is_animated and ((self.image.width * 2) <= self.gui.width) and ((self.image.height * 2) <= self.gui.height):
+            self.image = self.image.crop(self.image.getbbox())
+            self.image = self.image.resize((self.image.width * 2, self.image.height * 2),
+                                           Image.Resampling.NEAREST)
+            self.image.is_animated = False
+            self.image.n_frames = 1
+
+        # TODO cropping and scaling not working for GIF animations
+
         print(p, self.image.width, self.image.height, self.image.is_animated, self.image.n_frames)
 
         self.xOff = int((self.gui.width - self.image.width) / 2)
@@ -141,6 +151,8 @@ if __name__ == "__main__":
         m.add(d)
 
         if filename != "Favicon.png":
+            continue
+        if (t.width != 32) or (t.height != 32):
             continue
 
         try:

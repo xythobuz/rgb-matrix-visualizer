@@ -44,9 +44,10 @@ def getTarget(i = None):
         # TODO hard-coded adjustments
         from mapper import MapperReduceBrightness, MapperColorAdjust, MapperStripToRect
         bright = MapperReduceBrightness(pi, i)
-        col = MapperColorAdjust(bright)
+        #col = MapperColorAdjust(bright)
+        #target = col
         #target = MapperStripToRect(col)
-        target = col
+        target = MapperStripToRect(bright)
 
         if targetPlatform == None:
             # only print once

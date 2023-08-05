@@ -26,6 +26,8 @@ from pico import PicoBatt
 #url = "http://ubabot.frubar.net"
 url = "http://www.xythobuz.de"
 
+scroll_speed = 10
+
 import util
 i = util.getInput()
 t = util.getTarget(i)
@@ -39,20 +41,20 @@ t.loop_end()
 
 # UbaBot is online
 success = Manager(t)
-success.add(ScrollText(t, "Visit UbaBot Cocktail machine at FruBar village for drinks!", "bitmap8", 1, 10, camp_green))
+success.add(ScrollText(t, "Visit UbaBot Cocktail machine at FruBar village for drinks!", "bitmap8", 1, scroll_speed, camp_green))
 success.add(Solid(t, 1.0))
 success.add(QRScreen(t, qr_data, 30.0, "Drinks", "bitmap6", camp_pink, (0, 0, 0)))
 success.add(Solid(t, 1.0))
 
 # UbaBot is offline
 fail = Manager(t)
-fail.add(ScrollText(t, "#CCCAMP23", "bitmap8", 1, 10, camp_green))
+fail.add(ScrollText(t, "#CCCAMP23", "bitmap8", 1, scroll_speed, camp_green))
 fail.add(Solid(t, 1.0))
-fail.add(ScrollText(t, "The UbaBot Cocktail machine is closed. Please come back later!", "bitmap8", 1, 10, camp_green))
+fail.add(ScrollText(t, "The UbaBot Cocktail machine is closed. Please come back later!", "bitmap8", 1, scroll_speed, camp_green))
 fail.add(Solid(t, 1.0))
 fail.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
 fail.add(Solid(t, 1.0))
-fail.add(ScrollText(t, "Your advertisement could appear here. Open a Pull Request on git.xythobuz.de/thomas/rgb-matrix-visualizer or send an e-mail to thomas@xythobuz.de", "bitmap8", 1, 10, camp_green))
+fail.add(ScrollText(t, "Your advertisement could appear here. Open a Pull Request on git.xythobuz.de/thomas/rgb-matrix-visualizer or send an e-mail to thomas@xythobuz.de", "bitmap8", 1, scroll_speed, camp_green))
 fail.add(Solid(t, 1.0))
 
 # UbaBot status checker
@@ -65,6 +67,8 @@ m = Manager(t, i)
 m.add(QRScreen(t, img_data, 15.0, None, None, (255, 255, 255), (0, 0, 0)))
 m.add(Solid(t, 1.0))
 m.add(d) # HTTP Check, either "success" or "fail"
+m.add(Solid(t, 1.0))
+m.add(ScrollText(t, "Need to print something? FruBar village has a 3D printer. Come by!", "bitmap8", 1, scroll_speed, camp_pink))
 m.add(Solid(t, 1.0))
 m.add(PicoBatt(t, 5.0, 5.0))
 m.add(Solid(t, 1.0))
