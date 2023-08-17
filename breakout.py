@@ -14,7 +14,7 @@ import math
 import util
 
 class Breakout:
-    def __init__(self, g, i, ts = 0.1, to = 60.0):
+    def __init__(self, g, i, ts = 0.04, to = 60.0):
         self.gui = g
         self.input = i
         self.timestep = ts
@@ -43,8 +43,8 @@ class Breakout:
         self.ball = [
             self.player, # x
             self.gui.height - 2, # y
-            1, # v x
-            -1, # v y
+            math.sqrt(.5), # v x
+            -math.sqrt(.5), # v y
         ]
 
     def restart(self):
@@ -111,6 +111,7 @@ class Breakout:
 
     def step(self):
         # move ball
+        old_ball = self.ball.copy()
         self.ball[0] += self.ball[2]
         self.ball[1] += self.ball[3]
 
@@ -124,19 +125,36 @@ class Breakout:
             self.ball[2] = -self.ball[2]
             self.ball[0] = self.gui.width - 1
 
-        # check for collisions with pieces
-        if self.data[int(self.ball[0])][int(self.ball[1])] != self.bg_c:
-            self.data[int(self.ball[0])][int(self.ball[1])] = self.bg_c
-            self.score += 1
-
-            # just invert Y travel direction
-            # TODO inaccurate collision behaviour in "corners"
-            self.ball[3] = -self.ball[3]
-
         # check for collision with ceiling
         if self.ball[1] <= 0:
             self.ball[3] = -self.ball[3]
 
+        # check for collisions with pieces
+        grid_pos_x = int(self.ball[0])
+        grid_pos_y = int(self.ball[1])
+        if self.data[grid_pos_x][grid_pos_y] != self.bg_c:
+            self.data[grid_pos_x][grid_pos_y] = self.bg_c
+            self.score += 1
+
+            old_grid_pos_x = int(old_ball[0])
+            old_grid_pos_y = int(old_ball[1])
+
+            # horizontal collision
+            if old_grid_pos_y == grid_pos_y:
+                self.ball[2] = -self.ball[2]
+            # vertical collision
+            elif old_grid_pos_x == grid_pos_x:
+                self.ball[3] = -self.ball[3]
+            # "diagonal" collision with horizontal obstacle
+            elif self.data[old_grid_pos_x-1][old_grid_pos_y] != self.bg_c or self.data[old_grid_pos_x+1][old_grid_pos_y] != self.bg_c:
+                self.ball[2] = -self.ball[2]
+            # "diagonal" collision with vertical obstacle
+            elif self.data[old_grid_pos_x][old_grid_pos_y-1] != self.bg_c or self.data[old_grid_pos_x][old_grid_pos_y+1] != self.bg_c:
+                self.ball[3] = -self.ball[3]
+            # "diagonal" collision without obstacle
+            else:
+                self.ball[2] = -self.ball[2]
+                self.ball[3] = -self.ball[3]
 
         # check for collision with floor
         if self.ball[1] >= self.gui.height - 1:
@@ -159,8 +177,8 @@ class Breakout:
 
             # small angles in the middle, big angles at the end of the paddle (angle measured against the orthogonal of the paddle)
             angle_degree = 80 * pos_on_paddle / (self.paddle_width/2)
-            self.ball[2] = -1 * math.sin(angle_degree/180*3.14159) * math.sqrt(2)
-            self.ball[3] = -1 * math.cos(angle_degree/180*3.14159) * math.sqrt(2)
+            self.ball[2] = -1 * math.sin(angle_degree/180*3.14159)
+            self.ball[3] = -1 * math.cos(angle_degree/180*3.14159)
 
 
     def finishedEndScreen(self):
