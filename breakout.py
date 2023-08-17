@@ -56,10 +56,11 @@ class Breakout:
 
         self.data = [[self.bg_c for y in range(self.gui.height)] for x in range(self.gui.width)]
 
-        for x in range(self.gui.width - 2):
-            for y in range(5):
-                self.data[x + 1][y] = self.fg_c
-        self.maxScore = 5 * (self.gui.width - 2)
+        self.maxScore = 0
+        for x in range(5,self.gui.width - 5):
+            for y in range(5,10):
+                self.data[x][y] = self.fg_c
+                self.maxScore += 1
 
         # TODO easy mode
         self.nothing_to_lose = False
