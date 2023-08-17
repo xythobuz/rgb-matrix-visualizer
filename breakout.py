@@ -62,7 +62,7 @@ class Breakout:
         self.maxScore = 5 * (self.gui.width - 2)
 
         # TODO easy mode
-        self.nothing_to_lose = True
+        self.nothing_to_lose = False
 
         DrawText = util.getTextDrawer()
         self.text = DrawText(self.gui, self.text_c)
@@ -136,15 +136,6 @@ class Breakout:
         if self.ball[1] <= 0:
             self.ball[3] = -self.ball[3]
 
-        # check for collision with paddle
-        if (self.ball[1] == self.gui.height - 2) and (self.ball[0] >= (self.player - int(self.paddle_width / 2))) and (self.ball[0] <= (self.player + int(self.paddle_width / 2))):
-            # TODO angle for bounce from paddle
-            #self.ball[3] = -self.ball[3]
-            d = self.ball[0] - (self.player - (self.paddle_width / 2))
-            angle = (d / self.paddle_width - 0.5) / 2 * 3.14159
-            print(math.degrees(angle))
-            self.ball[2] = math.cos(angle) * math.sqrt(2)
-            self.ball[3] = math.sin(angle) * math.sqrt(2)
 
         # check for collision with floor
         if self.ball[1] >= self.gui.height - 1:
@@ -154,6 +145,22 @@ class Breakout:
             else:
                 self.place()
                 self.lives -= 1
+
+        # check for collision with paddle
+        elif self.ball[1] >= self.gui.height - 2:
+            pos_on_paddle = self.player - self.ball[0]
+            if abs(pos_on_paddle) > self.paddle_width/2:
+                return
+
+            # if hit exactly in the middle the direction of the angle depens on the x-direction in came from
+            if pos_on_paddle == 0:
+                pos_on_paddle = -0.5 if self.ball[3] > 0 else 0.5
+
+            # small angles in the middle, big angles at the end of the paddle (angle measured against the orthogonal of the paddle)
+            angle_degree = 80 * pos_on_paddle / (self.paddle_width/2)
+            self.ball[2] = -1 * math.sin(angle_degree/180*3.14159) * math.sqrt(2)
+            self.ball[3] = -1 * math.cos(angle_degree/180*3.14159) * math.sqrt(2)
+
 
     def finishedEndScreen(self):
         if self.score >= self.maxScore:
