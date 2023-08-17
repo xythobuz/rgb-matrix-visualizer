@@ -20,7 +20,7 @@ class Breakout:
         self.timestep = ts
         self.timeout = to
 
-        self.paddle_width = 43#9
+        self.paddle_width = 9
 
         self.winText = ScrollText(self.gui, "You Won!", "uushi",
                                   2, 50, (0, 255, 0))
@@ -96,12 +96,12 @@ class Breakout:
 
         return False
 
-    def buttons(self):
+    def buttons(self, next_step=False):
         keys = self.input.get()
 
-        if keys["left"] and (not self.old_keys["left"]) and (not self.old_keys["select"]):
+        if keys["left"] and (not self.old_keys["left"] or next_step) and (not self.old_keys["select"]):
             self.direction = "l"
-        elif keys["right"] and (not self.old_keys["right"]) and (not self.old_keys["select"]):
+        elif keys["right"] and (not self.old_keys["right"] or next_step) and (not self.old_keys["select"]):
             self.direction = "r"
         elif (keys["select"] and keys["start"] and (not self.old_keys["start"])) or (keys["start"] and keys["select"] and (not self.old_keys["select"])):
             self.restart()
@@ -171,9 +171,10 @@ class Breakout:
         self.scoreText.draw()
 
     def draw(self):
+        now = time.time()
         # handle / generate player inputs
         if self.input != None:
-            self.buttons()
+            self.buttons((now - self.last) >= self.timestep)
         else:
             # TODO "AI"
             pass
