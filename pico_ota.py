@@ -49,6 +49,59 @@ class PicoOTA:
         self.gui = g
         self.text = t
 
+
+        if (self.gui == None) or (self.text == None):
+            return
+
+        for i in range(0, 5):
+            self.gui.loop_start()
+
+            self.text.fg = (255, 255, 0)
+            self.text.setText("WiFi", "bitmap6")
+            self.text.draw(0, 6 * 0, False)
+
+            self.text.fg = (255, 0, 255)
+            self.text.setText("???", "bitmap6")
+            self.text.draw(0, 6 * 1, False)
+
+            self.text.fg = (255, 0, 0)
+            self.text.setText(str(i + 1) + " / 5", "bitmap6")
+            self.text.draw(0, 6 * 2, False)
+
+            self.text.fg = (0, 255, 0)
+            self.text.setText("", "bitmap6")
+            self.text.draw(0, 6 * 3, False)
+
+            self.text.setText("Conn...", "bitmap6")
+            self.text.draw(0, 6 * 4, False)
+
+            self.gui.loop_end()
+
+            util.connectToWiFi()
+
+            self.gui.loop_start()
+
+            self.text.fg = (255, 255, 0)
+            self.text.setText("WiFi", "bitmap6")
+            self.text.draw(0, 6 * 0, False)
+
+            self.text.fg = (255, 0, 255)
+            self.text.setText("$NAME", "bitmap6")
+            self.text.draw(0, 6 * 1, False)
+
+            self.text.fg = (255, 0, 0)
+            self.text.setText(str(i + 1) + " / 5", "bitmap6")
+            self.text.draw(0, 6 * 2, False)
+
+            self.text.fg = (0, 255, 0)
+            self.text.setText("Status:", "bitmap6")
+            self.text.draw(0, 6 * 3, False)
+
+            self.text.setText("$val", "bitmap6")
+            self.text.draw(0, 6 * 4, False)
+
+            self.gui.loop_end()
+
     def path(self, p):
         self.update_path = p
 
@@ -62,7 +115,7 @@ class PicoOTA:
     def fetch(self, url):
         # lazily initialize WiFi
         if self.get == None:
-            self.get = util.getRequests()
+            self.get, post = util.getRequests()
             if self.get == None:
                 return None
 
@@ -84,6 +137,7 @@ class PicoOTA:
             return r
         except Exception as e:
             print()
+            print(url)
             if hasattr(sys, "print_exception"):
                 sys.print_exception(e)
             else:

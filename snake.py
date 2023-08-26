@@ -78,7 +78,7 @@ class Snake:
 
     def placeDot(self):
         d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
-        while self.data[d[0]][d[1]] != 0: # TODO don't place dots below score text
+        while (self.data[d[0]][d[1]] != 0) or (d[0] < 15) or (d[1] < 8):
             d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
         self.data[d[0]][d[1]] = 2
 

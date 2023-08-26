@@ -136,11 +136,26 @@ def connectToWiFi():
     # Look for known networks
     visible = wlan.scan()
     ssid = None
+    user = None
     password = None
+
+    print(visible)
+    if len(visible) == 0:
+        print("No networks visible at all")
+        wifiConnected = False
+        return False
+
     for name, a, b, c, d, e in visible:
-        for t_ssid, t_password in Config.networks:
+        for net in Config.networks:
+            if len(net) == 2:
+                t_ssid, t_password = net
+            elif len(net) == 3:
+                t_ssid, t_user, t_password = net
+
             if name.decode("utf-8") == t_ssid:
                 ssid = t_ssid
+                if len(net) == 3:
+                    user = t_user
                 password = t_password
                 break
     if (ssid == None) or (password == None):
@@ -149,7 +164,11 @@ def connectToWiFi():
         return False
 
     # Start connection
-    wlan.connect(ssid, password)
+    if user != None:
+        wlan.seteap(user, password)
+        wlan.connect(ssid)
+    else:
+        wlan.connect(ssid, password)
 
     # Wait for connect success or failure
     max_wait = 40
@@ -186,7 +205,7 @@ def getRequests():
     try:
         # try to get normal python lib
         import requests
-        return requests.get
+        return requests.get, requests.post
     except Exception as e:
         print()
         if hasattr(sys, "print_exception"):
@@ -201,11 +220,11 @@ def getRequests():
         # in this case we also need to connect to WiFi first
         if not wifiConnected:
             if not connectToWiFi():
-                return None
+                return None, None
 
-        return requests.get
+        return requests.get, requests.post
 
-    return None
+    return None, None
 
 def getTextDrawer():
     try:

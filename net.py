@@ -18,7 +18,7 @@ class CheckHTTP:
         self.successScreen = None
         self.failScreen = None
         self.response = None
-        self.get = util.getRequests()
+        self.get, post = util.getRequests()
 
         self.restart()
 
