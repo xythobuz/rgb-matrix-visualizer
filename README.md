@@ -55,3 +55,5 @@ The fonts from [cmvnd/fonts](https://github.com/cmvnd/fonts) are licensed as GPL
 The tiny font is from [robey](https://robey.lag.net/2010/01/23/tiny-monospace-font.html) and licensed as CC0.
 
 The included GIFs are from [GifCities](https://gifcities.org/?q=32).
+
+The included DWD weather API documentation is from [their website](https://www.dwd.de/DE/leistungen/opendata/hilfe.html).

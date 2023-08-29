@@ -25,7 +25,7 @@ from PIL import GifImagePlugin
 GifImagePlugin.LOADING_STRATEGY = GifImagePlugin.LoadingStrategy.RGB_AFTER_DIFFERENT_PALETTE_ONLY
 
 class ImageScreen:
-    def __init__(self, g, p, t = 0.2, i = 1, to = 5.0, bg = None):
+    def __init__(self, g, p, t = 0.2, i = 1, to = 5.0, bg = None, target_size = None, nearest = True):
         self.gui = g
         self.time = t
         self.iterations = i
@@ -41,32 +41,38 @@ class ImageScreen:
             self.image.is_animated = False
             self.image.n_frames = 1
 
+        if target_size == None:
+            target_size = (self.gui.width, self.gui.height)
+
         # automatically crop and scale large images
-        if not self.image.is_animated and ((self.image.width > self.gui.width) or (self.image.height > self.gui.height)):
+        if not self.image.is_animated and ((self.image.width > target_size[0]) or (self.image.height > target_size[1])):
             # crop to visible area
             self.image = self.image.crop(self.image.getbbox())
 
             # keep the aspect ratio and fit within visible area
             ratio = self.image.width / self.image.height
-            max_width = int(ratio * self.gui.height)
-            max_height = int(self.gui.width / ratio)
-            if (max_height >= self.gui.height) or (((self.gui.width - max_width) < (self.gui.height - max_height)) and ((self.gui.width - max_width) >= 0)):
+            max_width = int(ratio * target_size[1])
+            max_height = int(target_size[0] / ratio)
+            if (max_height >= target_size[1]) or (((target_size[0] - max_width) < (target_size[1] - max_height)) and ((target_size[0] - max_width) >= 0)):
                 width = max_width
-                height = self.gui.height
+                height = target_size[1]
             else:
-                width = self.gui.width
+                width = target_size[0]
                 height = max_height
 
             # resize
-            self.image = self.image.resize((width, height),
-                                           Image.Resampling.NEAREST)
+            if nearest:
+                self.image = self.image.resize((width, height),
+                                            Image.Resampling.NEAREST)
+            else:
+                self.image = self.image.resize((width, height))
 
             # new image object is also missing these
             self.image.is_animated = False
             self.image.n_frames = 1
 
         # enlarge small images
-        if not self.image.is_animated and ((self.image.width * 2) <= self.gui.width) and ((self.image.height * 2) <= self.gui.height):
+        if not self.image.is_animated and ((self.image.width * 2) <= target_size[0]) and ((self.image.height * 2) <= target_size[1]):
             self.image = self.image.crop(self.image.getbbox())
             self.image = self.image.resize((self.image.width * 2, self.image.height * 2),
                                            Image.Resampling.NEAREST)
@@ -133,10 +139,11 @@ if __name__ == "__main__":
     import sys
 
     import util
-    t = util.getTarget()
+    i = util.getInput()
+    t = util.getTarget(i)
 
     from manager import Manager
-    m = Manager(t)
+    m = Manager(t, i)
 
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     imageDir = os.path.join(scriptDir, "images")
