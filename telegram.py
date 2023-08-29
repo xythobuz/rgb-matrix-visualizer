@@ -85,7 +85,7 @@ class TelegramBot:
             print()
             return None
 
-if True:#__name__ == "__main__":
+if __name__ == "__main__":
     b = TelegramBot()
     b.message("Hello World!")
     while True:

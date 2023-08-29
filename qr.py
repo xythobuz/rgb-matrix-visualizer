@@ -53,6 +53,12 @@ class QRScreen:
                     self.image = qr.make_image(fill_color = "white", back_color = "black")
             else:
                 self.image = qr.make_image(fill_color = self.c1, back_color = self.c2)
+
+            # enlarge small images
+            if ((self.image.width * 2) <= self.gui.width) and ((self.image.height * 2) <= self.gui.height):
+                from PIL import Image
+                self.image = self.image.crop(self.image.getbbox())
+                self.image = self.image.resize((self.image.width * 2, self.image.height * 2), Image.Resampling.NEAREST)
         else:
             # Show pre-generated QR code image
             self.image = PicoImage()
@@ -95,9 +101,15 @@ class QRScreen:
         if self.heading != None:
             off = 0
             if self.font == "bitmap6":
-                off = -14
+                if self.gui.height == 64:
+                    off = -14 - 16
+                else:
+                    off = -14
             elif self.font == "tom-thumb":
-                off = -11
+                if self.gui.height == 64:
+                    off = -11 - 16
+                else:
+                    off = -11
 
             self.text.draw(0, off)
 

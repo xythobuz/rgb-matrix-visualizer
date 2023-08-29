@@ -13,7 +13,7 @@
 import pygame
 
 class TestGUI:
-    def __init__(self, width = 32 * 2, height = 32 * 2, multiplier = 16):
+    def __init__(self, width = 32 * 2, height = 32 * 2, multiplier = 8):
         self.width = width
         self.height = height
         self.multiplier = multiplier

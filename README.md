@@ -14,7 +14,7 @@ and go from there.
 
 You always need:
 
-    pip install Pillow bdfparser "qrcode[pil]" evdev
+    pip install Pillow bdfparser "qrcode[pil]" evdev wetterdienst
 
 For evdev to find all devices you may need to add your user to the `input` group or run the scripts as root.
 

@@ -10,5 +10,12 @@
 class Config:
     networks = [
         ("SSID_1", "PASS_1"),
-        ("SSID_2", "PASS_2"),
+        ("SSID_2", "USER_2", "PASS_2"),
     ]
+
+    telegram_key = "API_KEY_HERE"
+    telegram_whitelist = [
+        "ALLOWED_CHAT_ID_HERE",
+    ]
+
+    weather_latlon = (YOUR_LAT_HERE, YOUR_LON_HERE)
