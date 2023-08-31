@@ -29,6 +29,7 @@ class Snake:
                                     3, 50, sc)
 
         self.text_c = (0, 0, 255)
+        self.fact = int(self.gui.width / self.gui.panelW)
 
         random.seed()
         self.restart()
@@ -39,9 +40,9 @@ class Snake:
         self.direction = "r"
         self.directionTmp = "r"
         self.score = 0
-        self.data = [[0 for y in range(self.gui.height)] for x in range(self.gui.width)]
+        self.data = [[0 for y in range(int(self.gui.height / self.fact))] for x in range(int(self.gui.width / self.fact))]
 
-        self.player = [ (int(self.gui.width / 2), int(self.gui.height / 2)) ]
+        self.player = [ (int(self.gui.width / 2 / self.fact), int(self.gui.height / 2 / self.fact)) ]
         self.data[self.player[0][0]][self.player[0][1]] = 1
 
         DrawText = util.getTextDrawer()
@@ -77,9 +78,9 @@ class Snake:
         return False
 
     def placeDot(self):
-        d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
+        d = (random.randrange(0, int(self.gui.width / self.fact)), random.randrange(0, int(self.gui.height / self.fact)))
         while (self.data[d[0]][d[1]] != 0) or (d[0] < 15) or (d[1] < 8):
-            d = (random.randrange(0, self.gui.width), random.randrange(0, self.gui.height))
+            d = (random.randrange(0, int(self.gui.width / self.fact)), random.randrange(0, int(self.gui.height / self.fact)))
         self.data[d[0]][d[1]] = 2
 
     def buttons(self):
@@ -109,7 +110,7 @@ class Snake:
         elif self.direction == "d":
             player = (player[0], player[1] + 1)
 
-        if (player[0] < 0) or (player[1] < 0) or (player[0] >= self.gui.width) or (player[1] >= self.gui.height):
+        if (player[0] < 0) or (player[1] < 0) or (player[0] >= int(self.gui.width / self.fact)) or (player[1] >= int(self.gui.height / self.fact)):
             return False
 
         if self.data[player[0]][player[1]] == 0:
@@ -122,7 +123,7 @@ class Snake:
         else:
             # collected a dot
             self.score += 1
-            if self.score >= self.gui.width * self.gui.height:
+            if self.score >= int(self.gui.width / self.fact) * int(self.gui.height / self.fact):
                 return False
 
             self.timestep = self.timestep * self.speedup
@@ -133,13 +134,13 @@ class Snake:
         return True
 
     def finishedEndScreen(self):
-        if self.score >= self.gui.width * self.gui.height:
+        if self.score >= int(self.gui.width / self.fact) * int(self.gui.height / self.fact):
             return self.winText.finished()
         else:
             return self.loseText.finished()
 
     def drawEndScreen(self):
-        if self.score >= self.gui.width * self.gui.height:
+        if self.score >= int(self.gui.width / self.fact) * int(self.gui.height / self.fact):
             self.winText.draw()
         else:
             self.loseText.draw()
@@ -179,9 +180,11 @@ class Snake:
                 self.loseText.restart()
                 self.scoreText.restart()
 
-        for x in range(0, self.gui.width):
-            for y in range(0, self.gui.height):
-                self.gui.set_pixel(x, y, self.colors[self.data[x][y]])
+        for x in range(0, int(self.gui.width / self.fact)):
+            for y in range(0, int(self.gui.height / self.fact)):
+                for x1 in range(0, self.fact):
+                    for y1 in range(0, self.fact):
+                        self.gui.set_pixel(x * self.fact + x1, y * self.fact + y1, self.colors[self.data[x][y]])
 
         # draw score
         self.text.setText(str(self.score), "tom-thumb")
