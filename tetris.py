@@ -13,13 +13,14 @@ import random
 import util
 
 class Tetris:
-    def __init__(self, g, i, ts = 0.5, to = 60.0, w = 10, h = 22):
+    def __init__(self, g, i, ts = 0.5, to = 60.0, w = 10, h = 22, rc = False):
         self.gui = g
         self.input = i
         self.timestep = ts
         self.timeout = to
         self.width = min(w, self.gui.width)
         self.height = min(h, self.gui.height)
+        self.randomizeColors = rc
 
         self.endText = ScrollText(self.gui, "Game Over!", "uushi",
                                    1, 50, (251, 72, 196))
@@ -251,9 +252,14 @@ class Tetris:
     def step(self):
         if self.next_piece == None:
             # select a new piece type and color
+            p_i = random.randrange(0, len(self.pieces))
+            if self.randomizeColors:
+                c_i = random.randrange(0, len(self.colors))
+            else:
+                c_i = p_i % len(self.colors)
             self.next_piece = [
-                self.pieces[random.randrange(0, len(self.pieces))], # piece
-                self.colors[random.randrange(0, len(self.colors))], # color
+                self.pieces[p_i], # piece
+                self.colors[c_i], # color
                 0, # x
                 0, # y
             ]
