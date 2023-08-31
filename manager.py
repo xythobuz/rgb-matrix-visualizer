@@ -8,17 +8,27 @@
 # ----------------------------------------------------------------------------
 
 import time
+import random
 
 class Manager:
-    def __init__(self, g, i = None, ss = 2):
+    def __init__(self, g, i = None, ss = 2, randomize = False):
         self.gui = g
         self.input = i
         self.step_size = ss
+        self.randomize = randomize
         self.screens = []
+
+        if self.randomize:
+            random.seed()
+
         self.restart()
 
     def restart(self):
-        self.index = 0
+        if self.randomize and (len(self.screens) > 0):
+            self.index = int(random.randrange(0, len(self.screens) / self.step_size) * self.step_size)
+        else:
+            self.index = 0
+
         self.done = False
         self.lastTime = time.time()
         self.old_keys = {
@@ -65,8 +75,19 @@ class Manager:
         self.lastTime = time.time()
 
         if update_flag:
-            # go through all for normal operation
-            self.index = (self.index + i) % len(self.screens)
+            if self.randomize:
+                if (self.index % self.step_size) == (self.step_size - 1):
+                    # end of "segment", now go to random next segment
+                    new_index = self.index
+                    while (new_index == self.index) and (len(self.screens) > self.step_size):
+                        new_index = int(random.randrange(0, len(self.screens) / self.step_size) * self.step_size)
+                    self.index = new_index
+                else:
+                    # still in "segment", so just normal iteration
+                    self.index = (self.index + i) % len(self.screens)
+            else:
+                # go through all for normal operation
+                self.index = (self.index + i) % len(self.screens)
         else:
             # use step_size for button presses
             self.index = int((int(self.index / self.step_size) + i) * self.step_size) % len(self.screens)

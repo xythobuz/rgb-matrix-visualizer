@@ -9,6 +9,7 @@
 
 camp_pink = (251, 72, 196)
 camp_green = (63, 255, 33)
+pause = 2.0
 
 from splash import SplashScreen
 from scroll import ScrollText
@@ -22,7 +23,6 @@ from gamepad import InputWrapper
 from manager import Manager
 from tetris import Tetris
 from breakout import Breakout
-from weather import WeatherScreen
 from config import Config
 import util
 
@@ -37,31 +37,43 @@ t.loop_start()
 splash.draw()
 t.loop_end()
 
-m = Manager(t, i)
+m = Manager(t, i, 2, True)
 
-m.add(ImageScreen(t, "cann.png"))
-m.add(Solid(t, 1.0))
-
-m.add(WeatherScreen(t, i, Config.weather_latlon))
-m.add(Solid(t, 1.0))
+if not util.isPi():
+    # TODO weather does not run on Pi yet unfortunately :(
+    from weather import WeatherScreen
+    m.add(WeatherScreen(t, i, Config.weather_latlon))
+    m.add(Solid(t, pause))
 
 m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
-m.add(Solid(t, 1.0))
+m.add(Solid(t, pause))
 
-m.add(ImageScreen(t, "cann2.png"))
-m.add(Solid(t, 1.0))
+m.add(ImageScreen(t, "32_earth.gif", 0.2, 2))
+m.add(Solid(t, pause))
 
-m.add(ImageScreen(t, "earth.gif"))
-m.add(Solid(t, 1.0))
+m.add(ImageScreen(t, "cann.png", 0.2, 1, 10.0))
+m.add(Solid(t, pause))
 
-#m.add(Breakout(t, i))
-#m.add(Solid(t, 1.0))
+m.add(ImageScreen(t, "cann2.png", 0.2, 1, 10.0))
+m.add(Solid(t, pause))
 
-#m.add(Tetris(t, i,))
-#m.add(Solid(t, 1.0))
+m.add(ImageScreen(t, "64_cloud.gif", 0.2, 1, 5.0, (0, 0, 0)))
+m.add(Solid(t, pause))
 
-#m.add(Snake(t, i, camp_pink, camp_green))
-#m.add(Solid(t, 1.0))
+m.add(ImageScreen(t, "64_sephiroth.gif", 0.2, 4, 5.0, (0, 0, 0)))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "64_nlogospin.gif", 0.2, 2))
+m.add(Solid(t, pause))
+
+m.add(Breakout(t, i))
+m.add(Solid(t, pause))
+
+m.add(Tetris(t, i,))
+m.add(Solid(t, pause))
+
+m.add(Snake(t, i, camp_pink, camp_green))
+m.add(Solid(t, pause))
 
 m.restart()
 util.loop(t, m.draw)
