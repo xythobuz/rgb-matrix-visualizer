@@ -229,6 +229,9 @@ class WeatherScreen:
             if d[0] != val:
                 continue
 
+            if d[2] == None:
+                self.descriptions[i] = (d[0], d[1], "weather_unknown.png")
+
             if isinstance(d[2], str):
                 w = 50
                 target_size = (w, w)
