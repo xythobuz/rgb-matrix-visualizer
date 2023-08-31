@@ -23,9 +23,17 @@ For debugging on your host PC you can use the TestGUI interface with pygame:
 
     pip install pygame
 
+## Setup
+
 The other currently supported option is using a Raspberry Pi with the [Adafruit RGB Matrix Bonnet](https://shop.pimoroni.com/products/adafruit-rgb-matrix-bonnet-for-raspberry-pi?variant=2257849155594) and a matching [LED Matrix](https://shop.pimoroni.com/products/rgb-led-matrix-panel?variant=35962488650).
 The [tutorial](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) suggests using the [Adafruit Raspberry Pi Installer Script for the RGB matrix](https://github.com/adafruit/Raspberry-Pi-Installer-Scripts/blob/339cccfbdd8b503b53186176ff96bead9a13a2f5/rgb-matrix.sh).
 This will give you the [hzeller/rpi-rgb-led-matrix](https://github.com/hzeller/rpi-rgb-led-matrix) project which includes the Python bindings used in this project.
+
+Use the included systemd unit to auto-start the script on Raspberry Pi:
+
+    sudo cp tools/led.service /etc/systemd/system/led.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable --now led.service
 
 ## Adding your own visualizations
 

@@ -1,0 +1,13 @@
+[Unit]
+Description=RGB LED Matrix
+After=multi-user.target
+
+[Service]
+Type=idle
+User=root
+ExecStart=/home/thomas/rgb-matrix-visualizer/livingroom.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
