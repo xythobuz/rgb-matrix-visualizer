@@ -40,7 +40,7 @@ t.loop_end()
 
 # UbaBot is online
 success_uba = Manager(t)
-success_uba.add(ImageScreen(t, "drinka.gif", 0.2, 2, 20.0, (0, 0, 0)))
+success_uba.add(ImageScreen(t, "32_drinka.gif", 0.2, 2, 20.0, (0, 0, 0)))
 success_uba.add(Solid(t, 1.0))
 success_uba.add(ScrollText(t, "Visit the UbaBot Cocktail machine at FruBar village for drinks!", "lemon", 2, scroll_speed, camp_green))
 success_uba.add(Solid(t, 1.0))
@@ -49,7 +49,7 @@ success_uba.add(Solid(t, 1.0))
 
 # UbaBot is offline
 fail_uba = Manager(t)
-fail_uba.add(ImageScreen(t, "attention.gif", 0.2, 2, 20.0, (0, 0, 0)))
+fail_uba.add(ImageScreen(t, "32_attention.gif", 0.2, 2, 20.0, (0, 0, 0)))
 fail_uba.add(Solid(t, 1.0))
 fail_uba.add(ScrollText(t, "The UbaBot Cocktail machine is currently closed. Please come back later for more drinks!", "lemon", 2, scroll_speed, camp_pink))
 fail_uba.add(Solid(t, 1.0))
@@ -80,7 +80,7 @@ d2.fail(fail_printer)
 m = Manager(t, i)
 m.add(ScrollText(t, "#CCCAMP23", "lemon", 1, scroll_speed, camp_green))
 m.add(Solid(t, 1.0))
-m.add(ImageScreen(t, "Favicon.png", 0, 1, 10.0))
+m.add(ImageScreen(t, "camp23.png", 0, 1, 10.0))
 m.add(Solid(t, 1.0))
 m.add(ScrollText(t, "Grab a cold draft beer at FruBar village!", "iv18x16u", 1, scroll_speed, camp_green))
 m.add(d) # HTTP Check, either "success" or "fail"

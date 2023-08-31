@@ -157,7 +157,7 @@ if __name__ == "__main__":
         d = ImageScreen(t, filename)
         m.add(d)
 
-        if filename != "Favicon.png":
+        if filename != "camp23.png":
             continue
         if (t.width != 32) or (t.height != 32):
             continue
