@@ -261,14 +261,14 @@ class WeatherScreen:
         # heading
         self.t_head.setText("Temps:", "lemon")
         self.t_head.draw(3, -self.gui.height / 2 + 7)
+        self.t_sub.setText("Current:", "lemon")
+        self.t_sub.draw(3, -self.gui.height / 2 + 20)
 
         # current temperature
-        self.t_sub.setText("Current:", "tom-thumb")
-        self.t_sub.draw(0, -self.gui.height / 2 + 5 + 6 * 2)
         val = self.data.filter(polars.col("parameter") == self.params[1])[0]["value"][0]
         val = val - 273.15 # kelvin to celsius
-        self.t_val.setText("{:.1f} °C".format(val), "tom-thumb")
-        self.t_val.draw(0, -self.gui.height / 2 + 5 + 6 * 3)
+        self.t_val.setText("{:.1f}°C".format(val), "tom-thumb")
+        self.t_val.draw(0, -self.gui.height / 2 + 5 + 6 * 5)
 
     def draw_cloud_cover(self):
         # heading
@@ -278,7 +278,7 @@ class WeatherScreen:
         self.t_sub.draw(3, -self.gui.height / 2 + 20)
 
         val = self.data.filter(polars.col("parameter") == self.params[2])[0]["value"][0]
-        self.t_val.setText("{:.1f} %".format(val), "tom-thumb")
+        self.t_val.setText("{:.1f}%".format(val), "tom-thumb")
         self.t_val.draw(0, -self.gui.height / 2 + 5 + 6 * 5)
 
     def draw(self):

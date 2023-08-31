@@ -22,11 +22,11 @@ class Snake:
         self.speedup = su
 
         self.winText = ScrollText(self.gui, "You Won!", "uushi",
-                                  2, 50, (0, 255, 0))
+                                  1, 50, (0, 255, 0))
         self.loseText = ScrollText(self.gui, "Game Over!", "uushi",
-                                   2, 50, (255, 0, 0))
+                                   1, 50, (255, 0, 0))
         self.scoreText = ScrollText(self.gui, "Score:", "uushi",
-                                    2, 50, sc)
+                                    3, 50, sc)
 
         self.text_c = (0, 0, 255)
 

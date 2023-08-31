@@ -23,11 +23,11 @@ class Breakout:
         self.paddle_width = 9
 
         self.winText = ScrollText(self.gui, "You Won!", "uushi",
-                                  2, 50, (0, 255, 0))
+                                  1, 50, (0, 255, 0))
         self.loseText = ScrollText(self.gui, "Game Over!", "uushi",
-                                   2, 50, (255, 0, 0))
+                                   1, 50, (255, 0, 0))
         self.scoreText = ScrollText(self.gui, "Score:", "uushi",
-                                    2, 50, (255, 255, 255))
+                                    3, 50, (255, 255, 255))
 
         self.bg_c = (0, 0, 0)
         self.fg_c = (0, 255, 0)

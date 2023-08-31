@@ -22,9 +22,9 @@ class Tetris:
         self.height = min(h, self.gui.height)
 
         self.endText = ScrollText(self.gui, "Game Over!", "uushi",
-                                   2, 50, (251, 72, 196))
+                                   1, 50, (251, 72, 196))
         self.scoreText = ScrollText(self.gui, "Score:", "uushi",
-                                    2, 50, (63, 255, 33))
+                                    3, 50, (63, 255, 33))
 
         self.bg = (0, 0, 0)
         self.colors = [
