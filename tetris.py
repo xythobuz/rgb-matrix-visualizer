@@ -51,8 +51,12 @@ class Tetris:
         self.text[1].setText("0", "tom-thumb")
         self.text[2].setText("Paused", "tom-thumb")
         self.text[3].setText("next", "tom-thumb")
-        self.text[4].setText("Tetris", "tom-thumb")
-        self.text[5].setText("up", "tom-thumb")
+        if self.gui.height > self.gui.panelH:
+            self.text[4].setText("Tetris", "ib8x8u")
+            self.text[5].setText("up:", "tom-thumb")
+        else:
+            self.text[4].setText("Tetris", "tom-thumb")
+            self.text[5].setText("up", "tom-thumb")
 
         # all [y][x] sub-lists must be the same length
         self.pieces = [
@@ -113,11 +117,17 @@ class Tetris:
         self.max_width += 2
         self.max_height += 2
 
+
+        self.fact = 1
         self.x_off = 1
         self.y_off = self.gui.height - self.height - 3
-
-        self.next_x_off = self.gui.panelW - self.max_width - 3
+        self.next_x_off = self.gui.panelW - self.max_width + 24
         self.next_y_off = self.gui.panelH - self.max_height - 3
+
+        if self.gui.height > self.gui.panelH:
+            self.fact = 2
+            self.y_off = self.gui.height - self.height * self.fact - 3
+            self.next_y_off = self.gui.panelH - self.max_height * self.fact + 29
 
         random.seed()
         self.restart()
@@ -346,11 +356,18 @@ class Tetris:
     def draw_stats(self, off):
         x_off, y_off = off
 
-        self.text[0].draw(-x_off - 2, y_off - 11)
-        self.text[1].draw(-x_off - 2, y_off - 5)
+        if self.fact > 1:
+            self.text[0].draw(-x_off - 2, y_off - 6)
+            self.text[1].draw(-x_off - 2, y_off)
+        else:
+            self.text[0].draw(-x_off - 2, y_off - 11)
+            self.text[1].draw(-x_off - 2, y_off - 5)
 
         if self.pause:
-            self.text[2].draw(-x_off - 2, -y_off + 11)
+            if self.fact > 1:
+                self.text[2].draw(-x_off - 2 + 16, -y_off + 11 - 5)
+            else:
+                self.text[2].draw(-x_off - 2, -y_off + 11)
 
     def draw(self):
         if self.input != None:
@@ -380,9 +397,14 @@ class Tetris:
                 self.endText.restart()
 
         # static text
-        self.text[4].draw(-2, -11)
-        self.text[3].draw(-14, 5)
-        self.text[5].draw(-14, 12)
+        if self.fact > 1:
+            self.text[4].draw(-2, -22)
+            self.text[3].draw(-34, 13)
+            self.text[5].draw(-34, 20)
+        else:
+            self.text[4].draw(-2, -11)
+            self.text[3].draw(-14, 5)
+            self.text[5].draw(-14, 12)
 
         # draw play area and border
         for x in range(-1, self.width + 1):
@@ -390,7 +412,14 @@ class Tetris:
                 c = self.colors[1] # border color
                 if (x >= 0) and (y >= 0) and (x < self.width) and (y < self.height):
                     c = self.data[x][y]
-                self.gui.set_pixel(x + 1 + self.x_off, y + 1 + self.y_off, c)
+
+                for x1 in range(0, self.fact):
+                    for y1 in range(0, self.fact):
+                        self.gui.set_pixel(
+                            self.fact * x + 1 + self.x_off + x1,
+                            self.fact * y + 1 + self.y_off + y1,
+                            c
+                        )
 
         # draw next piece and border
         for x in range(-1, self.max_width + 1):
@@ -407,7 +436,14 @@ class Tetris:
                                 c = (0, 0, 0)
                         else:
                             c = (0, 0, 0)
-                self.gui.set_pixel(x + 1 + self.next_x_off, y + 1 + self.next_y_off, c)
+
+                for x1 in range(0, self.fact):
+                    for y1 in range(0, self.fact):
+                        self.gui.set_pixel(
+                            self.fact * x + 1 + self.next_x_off + x1,
+                            self.fact * y + 1 + self.next_y_off + y1,
+                            c
+                        )
 
         # find position for stats
         stats_off = None
