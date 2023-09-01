@@ -78,8 +78,8 @@ class Manager:
             if self.randomize:
                 if (self.index % self.step_size) == (self.step_size - 1):
                     # end of "segment", now go to random next segment
-                    new_index = self.index
-                    while (new_index == self.index) and (len(self.screens) > self.step_size):
+                    new_index = self.index - self.step_size + 1
+                    while (new_index == self.index - self.step_size + 1) and (len(self.screens) > self.step_size):
                         new_index = int(random.randrange(0, len(self.screens) / self.step_size) * self.step_size)
                     self.index = new_index
                 else:

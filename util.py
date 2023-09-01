@@ -91,8 +91,9 @@ def getTarget(i = None):
             ui = TestGUI()
 
             # TODO hard-coded adjustments
-            from mapper import MapperReduceBrightness
-            target = MapperReduceBrightness(ui, i)
+            #from mapper import MapperReduceBrightness
+            #target = MapperReduceBrightness(ui, i)
+            target = ui
 
             if targetPlatform == None:
                 # only print once
