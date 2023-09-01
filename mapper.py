@@ -151,22 +151,30 @@ class MapperReduceBrightness(MapperNull):
 
         # TODO ntptime is setting to UTC, host is on proper timezone
         if useNTP:
-            # 8pm utc == 10pm cest germany
-            night = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
+            # 6pm utc == 8pm cest germany
+            evening = (now[0], now[1], now[2], 18, 0, 0, 0, 0)
 
-            # 5am utc == 7am cest germany
-            morning = (now[0], now[1], now[2], 5, 0, 0, 0, 0)
+            # 0am utc == 2am cest germany
+            night = (now[0], now[1], now[2], 0, 0, 0, 0, 0)
+
+            # 6am utc == 8am cest germany
+            morning = (now[0], now[1], now[2], 6, 0, 0, 0, 0)
         else:
-            # 10pm cest germany
-            night = (now[0], now[1], now[2], 22, 0, 0, 0, 0)
+            # 8pm cest germany
+            evening = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
 
-            # 7am cest germany
-            morning = (now[0], now[1], now[2], 7, 0, 0, 0, 0)
+            # 2am cest germany
+            night = (now[0], now[1], now[2], 2, 0, 0, 0, 0)
 
-        if (now > morning) and (now < night):
+            # 8am cest germany
+            morning = (now[0], now[1], now[2], 8, 0, 0, 0, 0)
+
+        if (now >= morning) and (now < evening):
             self.factor = 1.0
-        else:
+        elif (now >= evening) or (now < night):
             self.factor = 0.42
+        else:
+            self.factor = 0.1
 
     def buttons(self):
         keys = self.input.get()

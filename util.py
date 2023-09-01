@@ -88,7 +88,11 @@ def getTarget(i = None):
 
             # If this fails fall back to the SDL/pygame GUI
             from test import TestGUI
-            target = TestGUI()
+            ui = TestGUI()
+
+            # TODO hard-coded adjustments
+            from mapper import MapperReduceBrightness
+            target = MapperReduceBrightness(ui, i)
 
             if targetPlatform == None:
                 # only print once
