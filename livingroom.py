@@ -51,6 +51,9 @@ m.add(Solid(t, pause))
 m.add(ImageScreen(t, "32_earth.gif", 0.2, 2))
 m.add(Solid(t, pause))
 
+m.add(ImageScreen(t, "aphex-twin-logo.png", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
 m.add(ImageScreen(t, "cann.png", 0.2, 1, 10.0))
 m.add(Solid(t, pause))
 

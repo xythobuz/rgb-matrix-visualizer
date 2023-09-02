@@ -81,7 +81,7 @@ class ImageScreen:
 
         # TODO cropping and scaling not working for GIF animations
 
-        print(p, self.image.width, self.image.height, self.image.is_animated, self.image.n_frames)
+        print(p, self.image.width, self.image.height, self.image.is_animated, self.image.n_frames, nearest)
 
         self.xOff = int((self.gui.width - self.image.width) / 2)
         self.yOff = int((self.gui.height - self.image.height) / 2)
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     t = util.getTarget(i)
 
     from manager import Manager
-    m = Manager(t, i)
+    m = Manager(t, i, 1)
 
     scriptDir = os.path.dirname(os.path.realpath(__file__))
     imageDir = os.path.join(scriptDir, "images")
@@ -154,8 +154,10 @@ if __name__ == "__main__":
             if not sys.argv[1] in filename:
                 continue
 
-        d = ImageScreen(t, filename)
-        m.add(d)
+        for i in range(0, 2):
+            nearest = (i == 1)
+            d = ImageScreen(t, filename, 0.2, 1, 2.5, None, None, nearest)
+            m.add(d)
 
         if filename != "camp23.png":
             continue
