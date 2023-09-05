@@ -17,7 +17,7 @@ class Snake:
         self.gui = g
         self.input = i
         self.colors = [ bg, sc, d ]
-        self.timestep = ts
+        self.timestepOriginal = ts
         self.timeout = to
         self.speedup = su
 
@@ -35,6 +35,7 @@ class Snake:
         self.restart()
 
     def restart(self):
+        self.timestep = self.timestepOriginal
         self.start = time.time()
         self.last = time.time()
         self.direction = "r"
