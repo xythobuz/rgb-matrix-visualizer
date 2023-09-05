@@ -69,6 +69,12 @@ m.add(Solid(t, pause))
 m.add(ImageScreen(t, "64_nlogospin.gif", 0.2, 2))
 m.add(Solid(t, pause))
 
+m.add(ImageScreen(t, "64_snake.gif", 0.1, 2))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "64_snake2.gif", 0.2, 1))
+m.add(Solid(t, pause))
+
 m.add(Breakout(t, i))
 m.add(Solid(t, pause))
 
