@@ -31,13 +31,15 @@ class Tetris:
         self.colors = [
             (251, 72, 196), # camp23 pink
             (63, 255, 33), # camp23 green
-            (255, 0, 0),
-            #(0, 255, 0),
-            (0, 0, 255),
-            (255, 255, 0),
-            (0, 255, 255),
-            (255, 0, 255),
+            (255, 0, 0), # red
+            #(0, 255, 0), # green
+            (0, 0, 255), # blue
+            (255, 255, 0), # yellow
+            (0, 255, 255), # cyan
+            #(255, 0, 255),
             #(255, 255, 255),
+            (255, 127, 0), # orange
+            (127, 127, 127), # grey
         ]
 
         DrawText = util.getTextDrawer()
@@ -415,7 +417,7 @@ class Tetris:
         # draw play area and border
         for x in range(-1, self.width + 1):
             for y in range(-1, self.height + 1):
-                c = self.colors[1] # border color
+                c = self.colors[7] # border color
                 if (x >= 0) and (y >= 0) and (x < self.width) and (y < self.height):
                     c = self.data[x][y]
 
@@ -430,7 +432,7 @@ class Tetris:
         # draw next piece and border
         for x in range(-1, self.max_width + 1):
             for y in range(-1, self.max_height + 1):
-                c = self.colors[0] # border color
+                c = self.colors[7] # border color
                 if (x >= 0) and (y >= 0) and (x < self.max_width) and (y < self.max_height):
                     if self.next_piece == None:
                         c = (0, 0, 0)
