@@ -81,6 +81,9 @@ class MapperStripToRect(MapperNull):
         self.height = self.gui.height * 2
 
     def set_pixel(self, x, y, color):
+        if (x < 0) or (y < 0) or (x >= self.width) or (y >= self.height):
+            return
+
         if y >= self.gui.height:
             x += self.width
             y -= self.panelH

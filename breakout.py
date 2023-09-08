@@ -14,11 +14,12 @@ import math
 import util
 
 class Breakout:
-    def __init__(self, g, i, ts = 0.04, to = 60.0):
+    def __init__(self, g, i, ts = 0.025, to = 60.0, ria = True):
         self.gui = g
         self.input = i
         self.timestep = ts
         self.timeout = to
+        self.randomInitialAngle = ria
 
         self.paddle_width = 9
 
@@ -35,7 +36,9 @@ class Breakout:
         self.paddle_c = (255, 255, 255)
         self.text_c = (0, 0, 255)
 
-        random.seed()
+        if self.randomInitialAngle:
+            random.seed()
+
         self.restart()
 
     def place(self):
@@ -46,6 +49,11 @@ class Breakout:
             math.sqrt(.5), # v x
             -math.sqrt(.5), # v y
         ]
+
+        if self.randomInitialAngle:
+            angle_degree = random.randrange(-45, 45)
+            self.ball[2] = -1 * math.sin(angle_degree / 180 * 3.14159)
+            self.ball[3] = -1 * math.cos(angle_degree / 180 * 3.14159)
 
     def restart(self):
         self.start = time.time()
@@ -171,7 +179,7 @@ class Breakout:
             if abs(pos_on_paddle) > self.paddle_width/2:
                 return
 
-            # if hit exactly in the middle the direction of the angle depens on the x-direction in came from
+            # if hit exactly in the middle the direction of the angle depens on the x-direction it came from
             if pos_on_paddle == 0:
                 pos_on_paddle = -0.5 if self.ball[3] > 0 else 0.5
 
