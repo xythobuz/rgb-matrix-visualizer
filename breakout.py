@@ -31,10 +31,10 @@ class Breakout:
                                     3, 50, (255, 255, 255))
 
         self.bg_c = (0, 0, 0)
-        self.fg_c = (0, 255, 0)
-        self.ball_c = (255, 0, 0)
-        self.paddle_c = (255, 255, 255)
-        self.text_c = (0, 0, 255)
+        self.fg_c = (63, 255, 33) # camp green
+        self.ball_c = (251, 72, 196) # camp pink
+        self.paddle_c = (255, 255, 0)
+        self.text_c = (0, 255, 255)
 
         if self.randomInitialAngle:
             random.seed()
@@ -51,9 +51,12 @@ class Breakout:
         ]
 
         if self.randomInitialAngle:
-            angle_degree = random.randrange(-45, 45)
+            angle_degree = 0
+            while (angle_degree <= 2) and (angle_degree >= -2):
+                angle_degree = random.randrange(-45, 45)
             self.ball[2] = -1 * math.sin(angle_degree / 180 * 3.14159)
             self.ball[3] = -1 * math.cos(angle_degree / 180 * 3.14159)
+            #print("init", angle_degree, self.ball[2], self.ball[3])
 
     def restart(self):
         self.start = time.time()
@@ -102,6 +105,7 @@ class Breakout:
         if self.lives < 0:
             # game over screen
             return self.scoreText.finished()
+            #return True
 
         return False
 
@@ -180,13 +184,14 @@ class Breakout:
                 return
 
             # if hit exactly in the middle the direction of the angle depens on the x-direction it came from
-            if pos_on_paddle == 0:
+            if pos_on_paddle <= 0.01:
                 pos_on_paddle = -0.5 if self.ball[3] > 0 else 0.5
 
             # small angles in the middle, big angles at the end of the paddle (angle measured against the orthogonal of the paddle)
             angle_degree = 80 * pos_on_paddle / (self.paddle_width/2)
             self.ball[2] = -1 * math.sin(angle_degree/180*3.14159)
             self.ball[3] = -1 * math.cos(angle_degree/180*3.14159)
+            #print("paddle", angle_degree, self.ball[2], self.ball[3])
 
 
     def finishedEndScreen(self):
@@ -267,7 +272,7 @@ if __name__ == "__main__":
     i = util.getInput()
     t = util.getTarget(i)
 
-    d = Breakout(t, i)
+    d = Breakout(t, i, 0.001)
 
     # example color modifications
     d.fg_c = (0, 150, 0)
@@ -276,4 +281,9 @@ if __name__ == "__main__":
     d.text_c = (0, 0, 150)
     d.restart() # re-gen with new colors
 
-    util.loop(t, d.draw)
+    def helper():
+        d.draw()
+        if d.finished():
+            d.restart()
+
+    util.loop(t, helper)
