@@ -24,6 +24,7 @@ from manager import Manager
 from tetris import Tetris
 from breakout import Breakout
 from config import Config
+from apod import APOD
 import util
 
 # Need to import InputWrapper before initializing RGB Matrix on Pi
@@ -48,10 +49,28 @@ if not util.isPi():
 m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))
 m.add(Solid(t, pause))
 
+m.add(APOD(t, i))
+m.add(Solid(t, pause))
+
 m.add(ImageScreen(t, "32_earth.gif", 0.2, 2))
 m.add(Solid(t, pause))
 
 m.add(ImageScreen(t, "aphex-twin-logo.png", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "gta.png", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "camp23.png", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "pest.jpg", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "ccc_stern.jpg", 0.2, 1, 10.0, None, None, False))
+m.add(Solid(t, pause))
+
+m.add(ImageScreen(t, "ccc.png", 0.2, 1, 10.0))
 m.add(Solid(t, pause))
 
 m.add(ImageScreen(t, "cann.png", 0.2, 1, 10.0))
