@@ -17,20 +17,7 @@ class InputWrapper:
     def __init__(self):
         self.devices = []
         self.selector = DefaultSelector()
-        self.keys = {
-            "left": False,
-            "right": False,
-            "up": False,
-            "down": False,
-            "a": False,
-            "b": False,
-            "x": False,
-            "y": False,
-            "l": False,
-            "r": False,
-            "start": False,
-            "select": False,
-        }
+        self.keys = self.empty()
 
         devices = [InputDevice(path) for path in list_devices()]
         for device in devices:
@@ -57,6 +44,24 @@ class InputWrapper:
             d = InputDevice(device.path)
             self.devices.append(d)
             self.selector.register(d, EVENT_READ)
+
+    def empty(self):
+        return {
+            "left": False,
+            "right": False,
+            "up": False,
+            "down": False,
+            "a": False,
+            "b": False,
+            "x": False,
+            "y": False,
+            "l": False,
+            "r": False,
+            "start": False,
+            "select": False,
+            "l2": False,
+            "r2": False,
+        }
 
     def get(self, verbose = False):
         for key, mask in self.selector.select(0):
@@ -87,6 +92,10 @@ class InputWrapper:
                         self.keys["r"] = v
                     elif (event.code == ecodes.BTN_TOP2) or (event.code == ecodes.KEY_A):
                         self.keys["l"] = v
+                    elif event.code == ecodes.BTN_BASE:
+                        self.keys["r2"] = v
+                    elif event.code == ecodes.BTN_BASE2:
+                        self.keys["l2"] = v
                     elif (event.code == ecodes.BTN_BASE4) or (event.code == ecodes.KEY_BACKSPACE):
                         self.keys["start"] = v
                     elif event.code == ecodes.BTN_BASE3:
@@ -113,9 +122,13 @@ class InputWrapper:
                         else:
                             self.keys["down"] = False
                             self.keys["up"] = False
+                elif event.type == ecodes.EV_SYN:
+                    continue # don't print sync events
 
                 if verbose:
-                    print(categorize(event), event)
+                    print(categorize(event))
+                    print(event)
+                    print()
 
         return self.keys
 
@@ -123,13 +136,23 @@ if __name__ == "__main__":
     from pprint import pprint
     import sys
 
-    if len(sys.argv) > 1:
+    if (len(sys.argv) > 1) and (sys.argv[1] == "list"):
         devices = [InputDevice(path) for path in list_devices()]
         for device in devices:
             print(device.path, device.name, device.phys)
             pprint(device.capabilities(verbose=True))
             print()
-    else:
+    elif (len(sys.argv) > 1) and (sys.argv[1] == "events"):
         i = InputWrapper()
+        last_keys = None
         while True:
             i.get(True)
+    else:
+        i = InputWrapper()
+        last_keys = None
+        while True:
+            keys = i.get()
+            if (last_keys == None) or (keys != last_keys):
+                pprint(keys)
+                print()
+                last_keys = keys.copy()

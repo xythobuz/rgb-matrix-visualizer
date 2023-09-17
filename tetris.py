@@ -145,20 +145,7 @@ class Tetris:
         self.data = [[self.bg for y in range(self.height)] for x in range(self.width)]
         self.piece = None
         self.next_piece = None
-        self.old_keys = {
-            "left": False,
-            "right": False,
-            "up": False,
-            "down": False,
-            "a": False,
-            "b": False,
-            "x": False,
-            "y": False,
-            "l": False,
-            "r": False,
-            "start": False,
-            "select": False,
-        }
+        self.old_keys = self.input.empty() # TODO support missing input
         self.pause = False
 
     def finished(self):

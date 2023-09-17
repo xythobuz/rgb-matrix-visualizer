@@ -109,20 +109,7 @@ class MapperReduceBrightness(MapperNull):
         self.refresh = 60 * 60 * 6
         self.factor = 1.0
         self.user_mod = None
-        self.old_keys = {
-            "left": False,
-            "right": False,
-            "up": False,
-            "down": False,
-            "a": False,
-            "b": False,
-            "x": False,
-            "y": False,
-            "l": False,
-            "r": False,
-            "start": False,
-            "select": False,
-        }
+        self.old_keys = self.input.empty() # TODO support missing input
 
     def fetch(self):
         if useNTP:

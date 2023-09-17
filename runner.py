@@ -40,20 +40,7 @@ class TunnelRun:
 
         self.player = [ int(self.gui.width / 2), int(self.gui.height / 2) ]
 
-        self.old_keys = {
-            "left": False,
-            "right": False,
-            "up": False,
-            "down": False,
-            "a": False,
-            "b": False,
-            "x": False,
-            "y": False,
-            "l": False,
-            "r": False,
-            "start": False,
-            "select": False,
-        }
+        self.old_keys = self.input.empty() # TODO support missing input
 
     def finished(self):
         if self.input == None:

@@ -49,20 +49,7 @@ class Snake:
         DrawText = util.getTextDrawer()
         self.text = DrawText(self.gui, self.text_c)
 
-        self.old_keys = {
-            "left": False,
-            "right": False,
-            "up": False,
-            "down": False,
-            "a": False,
-            "b": False,
-            "x": False,
-            "y": False,
-            "l": False,
-            "r": False,
-            "start": False,
-            "select": False,
-        }
+        self.old_keys = self.input.empty() # TODO support missing input
 
         self.placeDot()
 
