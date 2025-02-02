@@ -150,11 +150,11 @@ class MapperReduceBrightness(MapperNull):
             # 6am utc == 8am cest germany
             morning = (now[0], now[1], now[2], 6, 0, 0, 0, 0)
         else:
-            # 8pm cest germany
-            evening = (now[0], now[1], now[2], 20, 0, 0, 0, 0)
+            # 6pm cest germany
+            evening = (now[0], now[1], now[2], 18, 0, 0, 0, 0)
 
-            # 2am cest germany
-            night = (now[0], now[1], now[2], 2, 0, 0, 0, 0)
+            # 1am cest germany
+            night = (now[0], now[1], now[2], 1, 0, 0, 0, 0)
 
             # 8am cest germany
             morning = (now[0], now[1], now[2], 8, 0, 0, 0, 0)

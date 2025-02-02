@@ -22,6 +22,7 @@ from gamepad import InputWrapper
 from manager import Manager
 from tetris import Tetris
 from breakout import Breakout
+from runner import TunnelRun
 import util
 
 url_uba = "http://ubabot.frubar.net"
@@ -42,6 +43,8 @@ t.loop_end()
 
 # Main "Menu"
 m = Manager(t, i)
+m.add(TunnelRun(t, i))
+m.add(Solid(t, 1.0))
 m.add(Breakout(t, i))
 m.add(Solid(t, 1.0))
 m.add(GameOfLife(t, 20, (0, 255, 0), (0, 0, 0), None, 2.0))

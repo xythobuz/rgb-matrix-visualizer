@@ -18,6 +18,17 @@ You always need:
 
 For evdev to find all devices you may need to add your user to the `input` group or run the scripts as root.
 
+To install wetterdienst on a Raspberry Pi 4 you first need to [get a Rust toolchain](https://rustup.rs/) (install it for root, because the visualizer has to run as root as well):
+
+    sudo su
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    # select arm-unknown-linux-gnueabihf manually
+    apt-get install gfortran libopenblas-base libopenblas-dev libatlas-base-dev python3-lxml python3-scipy python3-numpy python3-venv
+    python -m venv venv
+    source venv/bin/activate
+
+    pip install wetterdienst>=0.59.1 polars
+
 The rest depends on the output device chosen.
 For debugging on your host PC you can use the TestGUI interface with pygame:
 
